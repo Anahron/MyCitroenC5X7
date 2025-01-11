@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/png_background_low"
+    tools:context=".ui.home.HomeFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.08" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.06" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:backgroundTint="@color/main_yellow"
+        android:state_checked="true"
+        android:text="Сбросить"
+        android:textAllCaps="false"
+        android:textColor="@color/background"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+      />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="305dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="16dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/c5max"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text_trip_computer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Путевой компьютер"
+        android:textColor="@color/main_yellow"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/trip_group"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        app:checkedButton="@id/button_1"
+        app:layout_constraintStart_toStartOf="@+id/text_trip_computer"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_1"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/btn_color_toggle"
+            android:state_checked="true"
+            android:text="Мгновенное инфо"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_toggle"
+            android:textSize="28sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_2"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/btn_color_toggle"
+            android:text="Маршрут 1"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_toggle"
+            android:textSize="28sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_3"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/btn_color_toggle"
+            android:text="Маршрут 2"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_toggle"
+            android:textSize="28sp" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <LinearLayout
+        android:id="@+id/linear_moment_trip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="64dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.728"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_path" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/c5mini" />
+
+            <TextView
+                android:id="@+id/text_distance_left_moment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                android:text="9999 км"
+
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:fontFamily="sans-serif"
+                android:src="@drawable/c5mini"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_path" />
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginVertical="16dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_gas_tank" />
+            <TextView
+                android:id="@+id/text_distance_traveled_moment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:fontFamily="sans-serif"
+                android:gravity="end"
+                android:text="32 км/ч"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_gas_tank" />
+
+            <TextView
+                android:id="@+id/text_l100_moment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                android:text="5.4 л/100"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_trip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="64dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.728"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_path" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/c5mini" />
+
+            <TextView
+                android:id="@+id/text_distance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                android:text="9999 км"
+
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_speed" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginVertical="16dp"
+                android:contentDescription="@string/app_name"
+                android:fontFamily="sans-serif"
+                android:src="@drawable/c5mini"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_speed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:fontFamily="sans-serif"
+                android:gravity="end"
+                android:text="32 км/ч"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_gas_tank" />
+
+            <TextView
+                android:id="@+id/text_l100"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:gravity="end"
+                android:text="5.4 л/100"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

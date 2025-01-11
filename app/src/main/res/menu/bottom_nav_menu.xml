@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:layout_margin="26dp"
+        android:title="@string/path_computer" />
+
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:layout_margin="26dp"
+        android:title="@string/personalization" />
+
+    <item
+        android:id="@+id/navigation_suspension"
+        android:background="@color/main_yellow"
+        android:layout_margin="26dp"
+        android:icon="@drawable/vector_susp"
+        android:title="@string/suspension" />
+
+</menu>

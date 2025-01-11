@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Цвет для выбранной кнопки -->
+    <item android:state_checked="true" android:color="@color/main_yellow" />
+    <!-- Цвет для невыбранной кнопки -->
+    <item android:color="@color/semi_yellow" />
+</selector>

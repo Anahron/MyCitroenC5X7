@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MyCitroenC5X7</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="path_computer">Путевой компьютер</string>
+    <string name="personalization">Персонализация</string>
+    <string name="suspension">Подвеска</string>
+</resources>

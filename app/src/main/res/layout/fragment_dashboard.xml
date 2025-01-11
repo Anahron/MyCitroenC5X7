@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/png_background_low"
+    tools:context=".ui.dashboard.DashboardFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.08" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.06" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:backgroundTint="@color/main_yellow"
+        android:state_checked="true"
+        android:text="Сбросить"
+        android:textAllCaps="false"
+        android:textColor="@color/background"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toEndOf="@+id/imageView" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="305dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="16dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/c5max"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text_trip_computer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/personalization"
+        android:textColor="@color/main_yellow"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/materialButtonToggleGroup"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        app:checkedButton="@id/button_1"
+        app:layout_constraintStart_toStartOf="@+id/text_trip_computer"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_1"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/btn_color_toggle"
+            android:state_checked="true"
+            android:text="Освещение"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_toggle"
+            android:textSize="28sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_2"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/btn_color_toggle"
+            android:text="Комфорт"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_toggle"
+            android:textSize="28sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_3"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/btn_color_toggle"
+            android:text="Приборная панель"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_toggle"
+            android:textSize="28sp" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:visibility="visible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="64dp"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        android:layout_marginStart="80dp"
+        app:layout_constraintHorizontal_bias="0.618"
+        app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_dir_headlamp"
+                style="@style/CustomSwitchStyle"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
+
+            <TextView
+                android:id="@+id/text_dir_headlamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="Подсветка поворотов"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_guide_to_home"
+                style="@style/CustomSwitchStyle"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
+
+            <TextView
+                android:id="@+id/text_guide_to_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="Проводи меня домой"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="64dp"
+        android:layout_marginTop="64dp"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:layout_marginStart="80dp"
+        app:layout_constraintHorizontal_bias="0.618"
+        app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_handbrake"
+                style="@style/CustomSwitchStyle"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
+
+            <TextView
+                android:id="@+id/text_handbrake"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="Автоматический ручник"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_driver_position"
+                style="@style/CustomSwitchStyle"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
+
+            <TextView
+                android:id="@+id/text_driver_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:gravity="start"
+                android:lines="1"
+                android:text="Режим комфортной посадки"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_parktronic"
+                style="@style/CustomSwitchStyle"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
+
+            <TextView
+                android:id="@+id/text_d"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="Парктроник"
+                android:textColor="@color/main_yellow"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
