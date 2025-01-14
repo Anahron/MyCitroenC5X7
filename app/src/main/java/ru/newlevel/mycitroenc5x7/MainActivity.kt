@@ -51,8 +51,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         } else {
             val intent = Intent(this, UsbService::class.java)
             startForegroundService(intent)
-       //     collectLog()
-       //     collectData()
+            //     collectLog()
+            //     collectData()
             collectSuspensionState()
         }
     }
@@ -64,8 +64,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
             val intent = Intent(this, UsbService::class.java)
             startForegroundService(intent)
             collectSuspensionState()
-          //  collectLog()
-          //  collectData()
+            //  collectLog()
+            //  collectData()
         } else {
             Toast.makeText(this, "Разрешение не предоставлено", Toast.LENGTH_SHORT).show()
         }
@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.visibility = View.VISIBLE
                             binding.speedLimitSignView.setSpeedLimit(10)
+                            //TODO send to can1 frame 0x268 speed limit on CMB
                         }
 
                         Mode.MID -> {
@@ -119,26 +120,121 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.visibility = View.VISIBLE
                             binding.speedLimitSignView.setSpeedLimit(40)
+                            //TODO send to can1 frame 0x268 speed limit on CMB
                         }
 
                         Mode.NORMAL -> {
                             setImageAndIndicators(2)
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.visibility = View.GONE
+                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
                         }
 
                         Mode.LOW -> {
                             setImageAndIndicators(2)
                             binding.ivLevelShower.visibility = View.GONE
-                            binding.speedLimitSignView.visibility = View.VISIBLE
                             binding.speedLimitSignView.setSpeedLimit(10)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                            //TODO send to can1 frame 0x268 speed limit on CMB
                         }
 
-                        else -> ""
+                        Mode.LOW_TO_NORMAL -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.low_to_norm)
+                            binding.speedLimitSignView.visibility = View.GONE
+                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
+                        }
+
+                        Mode.LOW_TO_MED -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.low_to_mid)
+                            binding.speedLimitSignView.setSpeedLimit(40)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.LOW_TO_HIGH -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.low_to_high)
+                            binding.speedLimitSignView.setSpeedLimit(10)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.NORMAL_TO_LOW -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.norm_to_low)
+                            binding.speedLimitSignView.setSpeedLimit(10)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.NORMAL_TO_MED -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.norm_to_mid)
+                            binding.speedLimitSignView.setSpeedLimit(40)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.NORMAL_TO_HIGH -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.norm_to_high)
+                            binding.speedLimitSignView.setSpeedLimit(10)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.MED_TO_LOW -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.med_to_low)
+                            binding.speedLimitSignView.setSpeedLimit(10)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.MED_TO_NORMAL -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.med_to_norm)
+                            binding.speedLimitSignView.visibility = View.GONE
+                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
+                        }
+
+                        Mode.MED_TO_HIGH -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.med_to_high)
+                            binding.speedLimitSignView.setSpeedLimit(10)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.HIGH_TO_LOW -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.high_to_low)
+                            binding.speedLimitSignView.setSpeedLimit(10)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
+
+                        Mode.HIGH_TO_NORMAL -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.high_to_norm)
+                            binding.speedLimitSignView.visibility = View.GONE
+                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
+                        }
+
+                        Mode.HIGH_TO_MED -> {
+                            binding.ivLevelShower.visibility = View.VISIBLE
+                            binding.ivLevelShower.setImageResource(R.drawable.high_to_med)
+                            binding.speedLimitSignView.setSpeedLimit(40)
+                            binding.speedLimitSignView.visibility = View.VISIBLE
+                        }
                     }
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mainViewModel.setToBackground(true)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mainViewModel.setToBackground(false)
     }
 
     private fun setImageAndIndicators(id: Int) {

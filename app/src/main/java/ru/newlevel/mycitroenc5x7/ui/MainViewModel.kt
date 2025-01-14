@@ -1,5 +1,6 @@
 package ru.newlevel.mycitroenc5x7.ui
 
+import androidx.core.view.TintableBackgroundView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,10 @@ class MainViewModel(private val canRepo: CanRepo) : ViewModel() {
 
     init {
         setupSuspensionStateUpdate()
+    }
+
+    fun setToBackground(isBackground: Boolean){
+        canRepo.setToBackground(isBackground)
     }
 
     private fun setupSuspensionStateUpdate() {

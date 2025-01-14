@@ -16,12 +16,22 @@ class CanRepo(private val canUtils: CanUtils) {
     private val _canDataInfoFlow = MutableStateFlow<CanInfoModel>(CanInfoModel())
     val canDataInfoFlow: SharedFlow<CanInfoModel> = _canDataInfoFlow
 
+    private val backgroundState = MutableStateFlow<Boolean>(false)
+
+
     private val _logger = MutableSharedFlow<String>()
     val logger: SharedFlow<String> = _logger
 
     suspend fun putLog(text: String) {
         _logger.emit(text)
     }
+
+    fun setToBackground(isBackground: Boolean){
+        backgroundState.value = isBackground
+    }
+
+    fun getIsBackground(): Boolean = backgroundState.value
+
 
     @OptIn(ExperimentalUnsignedTypes::class)
     suspend fun processCanMessage(data: ByteArray) {

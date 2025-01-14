@@ -19,10 +19,10 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.android.scope.serviceScope
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ru.newlevel.mycitroenc5x7.MainActivity
@@ -83,8 +84,12 @@ class UsbService : Service(), KoinComponent {
             canRepo.putLog("onStartCommand")
         }
         startForegroundService()
+        //TODO удалить тестовые вызовы
+        serviceScope.launch(Dispatchers.Main) {
+            delay(8000)
+            showOverlayMessage(R.drawable.alert_not_granted)
+        }
         return START_STICKY
-
     }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -100,38 +105,33 @@ class UsbService : Service(), KoinComponent {
         }
     }
 
-    private val messageReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val message = intent?.getStringExtra("message") ?: return
-            showOverlayMessage(message)
-        }
-    }
 
+    private fun showOverlayMessage(resourceID: Int) {
+        Log.e(TAG, "getIsBackground() = ${canRepo.getIsBackground()}")
+        if (canRepo.getIsBackground()) {
+            val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+            val imageView = ImageView(this).apply {
+                setImageResource(resourceID)
+                //    scaleType = ImageView.ScaleType.CENTER_INSIDE
+                scaleX = 0.4f
+                scaleY = 0.4f
+            }
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
+                PixelFormat.TRANSLUCENT
+            )
 
-    private fun showOverlayMessage(message: String) {
-        val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        val imageView = ImageView(this).apply {
-            setImageResource(R.drawable.c5max_mid_pos)
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
-            scaleX = 0.5f
-            scaleY = 0.5f
-        }
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
-            PixelFormat.TRANSLUCENT
-        )
+            params.gravity = Gravity.CENTER
+            if (canRepo.getIsBackground())
+                windowManager.addView(imageView, params)
 
-        params.gravity = Gravity.CENTER
-        windowManager.addView(imageView, params)
-
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(4000)
-            windowManager.removeView(imageView)
-          //  delay(4000)
-          //  showOverlayMessage("")
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(4000)
+                windowManager.removeView(imageView)
+            }
         }
     }
 
@@ -165,16 +165,82 @@ class UsbService : Service(), KoinComponent {
     }
 
     private fun setupSuspensionUpdates() {
-        showOverlayMessage("сообщение")
         CoroutineScope(Dispatchers.Main).launch {
-            canRepo.canDataInfoFlow.collect { message ->
-                if (message.suspensionState.mode == Mode.MED_TO_NORMAL) showOverlayMessage("сообщение")
+            canRepo.canDataInfoFlow.collect {
+                when (it.suspensionState.mode) {
+                    Mode.NOT_GRANTED -> {
+                        showOverlayMessage(R.drawable.alert_not_granted)
+                    }
+
+                    Mode.HIGH -> {
+                        showOverlayMessage(R.drawable.alert_max_pos)
+                    }
+
+                    Mode.MID -> {
+                        showOverlayMessage(R.drawable.alert_mid_pos)
+                    }
+
+                    Mode.NORMAL -> {
+                        showOverlayMessage(R.drawable.alert_normal_pos)
+                    }
+
+                    Mode.LOW -> {
+                        showOverlayMessage(R.drawable.alert_low_pos)
+                    }
+
+                    Mode.LOW_TO_NORMAL -> {
+                        showOverlayMessage(R.drawable.alert_low_to_normal_pos)
+                    }
+
+                    Mode.LOW_TO_MED -> {
+                        showOverlayMessage(R.drawable.alert_low_to_mid_pos)
+                    }
+
+                    Mode.LOW_TO_HIGH -> {
+                        showOverlayMessage(R.drawable.alert_low_to_max_pos)
+                    }
+
+                    Mode.NORMAL_TO_LOW -> {
+                        showOverlayMessage(R.drawable.alert_normal_to_low_pos)
+                    }
+
+                    Mode.NORMAL_TO_MED -> {
+                        showOverlayMessage(R.drawable.alert_normal_to_mid_pos)
+                    }
+
+                    Mode.NORMAL_TO_HIGH -> {
+                        showOverlayMessage(R.drawable.alert_normal_to_max_pos)
+                    }
+
+                    Mode.MED_TO_LOW -> {
+                        showOverlayMessage(R.drawable.alert_mid_to_low_pos)
+                    }
+
+                    Mode.MED_TO_NORMAL -> {
+                        showOverlayMessage(R.drawable.alert_mid_to_normal_pos)
+                    }
+
+                    Mode.MED_TO_HIGH -> {
+                        showOverlayMessage(R.drawable.alert_mid_to_max_pos)
+                    }
+
+                    Mode.HIGH_TO_LOW -> {
+                        showOverlayMessage(R.drawable.alert_max_to_low_pos)
+                    }
+
+                    Mode.HIGH_TO_NORMAL -> {
+                        showOverlayMessage(R.drawable.alert_max_to_normal_pos)
+                    }
+
+                    Mode.HIGH_TO_MED -> {
+                        showOverlayMessage(R.drawable.alert_max_to_mid_pos)
+                    }
+                }
             }
         }
     }
 
     private fun createNotification(): Notification {
-
         val notificationIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -187,8 +253,7 @@ class UsbService : Service(), KoinComponent {
             .setSmallIcon(R.drawable.img)
             .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.img))
             .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setOngoing(true).setAutoCancel(false).build()
+            .build()
     }
 
     private fun setupConnection() {
@@ -252,7 +317,7 @@ class UsbService : Service(), KoinComponent {
         val channel = NotificationChannel(
             CHANEL_GPS,
             "CAN Service",
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
             description = "Collecting data from car"
             enableVibration(false)
@@ -265,7 +330,6 @@ class UsbService : Service(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver)
         unregisterReceiver(broadcastReceiver)
     }
 
