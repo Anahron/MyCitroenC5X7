@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/png_background_low"
+    android:background="@drawable/png_background_low2"
     tools:context=".ui.dashboard.DashboardFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -27,32 +27,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.06" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_reset"
-        android:layout_width="wrap_content"
-        android:layout_height="64dp"
-        android:backgroundTint="@color/main_yellow"
-        android:state_checked="true"
-        android:text="Сбросить"
-        android:textAllCaps="false"
-        android:textColor="@color/background"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toEndOf="@+id/imageView" />
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="305dp"
-        android:layout_marginHorizontal="8dp"
         android:layout_marginVertical="16dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/c5max"
+        android:src="@drawable/c5max_max_pos"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/guideline3" />
 
     <TextView
         android:id="@+id/text_trip_computer"
@@ -152,7 +135,7 @@
                 android:gravity="start"
                 android:text="Подсветка поворотов"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
 
 
         </LinearLayout>
@@ -184,7 +167,7 @@
                 android:gravity="start"
                 android:text="Проводи меня домой"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
     </LinearLayout>
@@ -230,7 +213,7 @@
                 android:gravity="start"
                 android:text="Автоматический ручник"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
 
 
         </LinearLayout>
@@ -262,7 +245,7 @@
                 android:lines="1"
                 android:text="Режим комфортной посадки"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -292,7 +275,7 @@
                 android:gravity="start"
                 android:text="Парктроник"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
     </LinearLayout>

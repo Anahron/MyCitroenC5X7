@@ -1,57 +1,38 @@
 package ru.newlevel.mycitroenc5x7.ui.dashboard
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import by.kirich1409.viewbindingdelegate.viewBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.newlevel.mycitroenc5x7.R
 import ru.newlevel.mycitroenc5x7.databinding.FragmentDashboardBinding
+import ru.newlevel.mycitroenc5x7.ui.home.HomeViewModel
 
-class DashboardFragment : Fragment() {
+class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
-    private var _binding: FragmentDashboardBinding? = null
+    private val binding: FragmentDashboardBinding by viewBinding()
+    private val dashboardViewModel by viewModel<HomeViewModel>()
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this)[DashboardViewModel::class.java]
-
-        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.materialButtonToggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
             when (checkedId) {
                 R.id.button_1 -> if (isChecked) {
-                  binding.linearLayout1.visibility = View.VISIBLE
+                    binding.linearLayout1.visibility = View.VISIBLE
                     binding.linearLayout2.visibility = View.GONE
                 }
+
                 R.id.button_2 -> if (isChecked) {
                     binding.linearLayout2.visibility = View.VISIBLE
                     binding.linearLayout1.visibility = View.GONE
-            }
-                R.id.button_3 -> if (isChecked) { /* Действие для кнопки 3 */ }
+                }
+
+                R.id.button_3 -> if (isChecked) { /* Действие для кнопки 3 */
+                }
             }
         }
-
-      //  val textView: TextView = binding.textDashboard
-//        dashboardViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
-        return root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

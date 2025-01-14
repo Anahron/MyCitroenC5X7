@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/png_background_low"
+    android:background="@drawable/png_background_low2"
     tools:context=".ui.home.HomeFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -19,6 +19,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.9" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.72" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -26,39 +32,115 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.06" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_reset"
         android:layout_width="wrap_content"
         android:layout_height="64dp"
         android:backgroundTint="@color/main_yellow"
         android:state_checked="true"
-        android:text="Сбросить"
+        android:text="@string/reset"
         android:textAllCaps="false"
         android:textColor="@color/background"
         android:textSize="28sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-      />
+        app:layout_constraintStart_toStartOf="@+id/linear_moment_trip" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="305dp"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="16dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/c5max"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="305dp"-->
+<!--        android:layout_marginVertical="16dp"-->
+<!--        android:contentDescription="@string/app_name"-->
+<!--        android:src="@drawable/c5max_max_pos"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/guideline3" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/iv_high"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:background="@color/semi_yellow"-->
+<!--        android:gravity="center"-->
+<!--        android:layout_marginHorizontal="2dp"-->
+<!--        android:text="@string/_4"-->
+<!--        android:textColor="@color/background"-->
+<!--        android:textSize="32sp"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/guideline4" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/iv_mid"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:background="@color/semi_yellow"-->
+<!--        android:gravity="center"-->
+<!--        android:layout_margin="2dp"-->
+<!--        android:text="@string/_3"-->
+<!--        android:textColor="@color/background"-->
+<!--        android:textSize="32sp"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/iv_high" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/iv_normal"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:background="@color/main_yellow"-->
+<!--        android:gravity="center"-->
+<!--        android:layout_margin="2dp"-->
+<!--        android:text="@string/_2"-->
+<!--        android:textColor="@color/background"-->
+<!--        android:textSize="32sp"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/iv_mid"-->
+<!--        />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/iv_low"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:background="@color/semi_yellow"-->
+<!--        android:gravity="center"-->
+<!--        android:text="@string/_1"-->
+<!--        android:layout_marginHorizontal="2dp"-->
+<!--        android:layout_marginTop="2dp"-->
+<!--        android:textColor="@color/background"-->
+<!--        android:textSize="32sp"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/imageView"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/iv_normal"-->
+<!--         />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/iv_level_shower"-->
+<!--        android:layout_width="50dp"-->
+<!--        android:layout_height="166dp"-->
+<!--        android:src="@drawable/norm_to_low"-->
+<!--        android:contentDescription="@string/app_name"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/iv_low"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/iv_mid"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/guideline4" />-->
+
+<!--    <ru.newlevel.mycitroenc5x7.ui.custiomViews.SpeedLimitSignView-->
+<!--        android:id="@+id/speedLimitSignView"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_margin="4dp"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/guideline4"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/iv_high"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/guideline3" />-->
+
+
+
 
     <TextView
         android:id="@+id/text_trip_computer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Путевой компьютер"
+        android:text="@string/trip_computer"
         android:textColor="@color/main_yellow"
         android:textSize="40sp"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
@@ -84,7 +166,7 @@
             android:layout_height="64dp"
             android:backgroundTint="@color/btn_color_toggle"
             android:state_checked="true"
-            android:text="Мгновенное инфо"
+            android:text="@string/instant_info"
             android:textAllCaps="false"
             android:textColor="@color/text_color_toggle"
             android:textSize="28sp" />
@@ -94,7 +176,7 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:backgroundTint="@color/btn_color_toggle"
-            android:text="Маршрут 1"
+            android:text="@string/trip_1"
             android:textAllCaps="false"
             android:textColor="@color/text_color_toggle"
             android:textSize="28sp" />
@@ -104,7 +186,7 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:backgroundTint="@color/btn_color_toggle"
-            android:text="Маршрут 2"
+            android:text="@string/Trip2"
             android:textAllCaps="false"
             android:textColor="@color/text_color_toggle"
             android:textSize="28sp" />
@@ -150,9 +232,8 @@
                 android:layout_marginStart="24dp"
                 android:gravity="end"
                 android:text="9999 км"
-
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -196,7 +277,7 @@
                 android:gravity="end"
                 android:text="32 км/ч"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -220,7 +301,7 @@
                 android:gravity="end"
                 android:text="5.4 л/100"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
     </LinearLayout>
@@ -266,9 +347,8 @@
                 android:layout_marginStart="24dp"
                 android:gravity="end"
                 android:text="9999 км"
-
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -306,7 +386,7 @@
                 android:gravity="end"
                 android:text="32 км/ч"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -328,9 +408,9 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="24dp"
                 android:gravity="end"
-                android:text="5.4 л/100"
+                android:text="7.4 л/100"
                 android:textColor="@color/main_yellow"
-                android:textSize="40sp" />
+                android:textSize="34sp" />
         </LinearLayout>
 
     </LinearLayout>

@@ -6,4 +6,13 @@
     <string name="path_computer">Путевой компьютер</string>
     <string name="personalization">Персонализация</string>
     <string name="suspension">Подвеска</string>
+    <string name="_4">4</string>
+    <string name="_3">3</string>
+    <string name="_2">2</string>
+    <string name="_1">1</string>
+    <string name="reset">Сбросить</string>
+    <string name="trip_computer">Путевой компьютер</string>
+    <string name="instant_info">Мгновенное инфо</string>
+    <string name="trip_1">Маршрут 1</string>
+    <string name="Trip2">Маршрут 2</string>
 </resources>

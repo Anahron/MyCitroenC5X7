@@ -10,29 +10,34 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.BitmapFactory
+import android.graphics.PixelFormat
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
+import android.view.Gravity
+import android.view.WindowManager
+import android.widget.ImageView
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.android.scope.serviceScope
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.dsl.koinApplication
 import ru.newlevel.mycitroenc5x7.MainActivity
+import ru.newlevel.mycitroenc5x7.R
 import ru.newlevel.mycitroenc5x7.app.ACTION_USB_PERMISSION
 import ru.newlevel.mycitroenc5x7.app.CHANEL_GPS
 import ru.newlevel.mycitroenc5x7.app.TAG
+import ru.newlevel.mycitroenc5x7.models.Mode
 import ru.newlevel.mycitroenc5x7.repository.CanRepo
 
 class UsbService : Service(), KoinComponent {
@@ -43,6 +48,7 @@ class UsbService : Service(), KoinComponent {
     private var connection: UsbDeviceConnection? = null
     private val canRepo: CanRepo by inject()
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
 
     @OptIn(ExperimentalUnsignedTypes::class)
     private val mCallback = UsbSerialInterface.UsbReadCallback { data ->
@@ -94,6 +100,42 @@ class UsbService : Service(), KoinComponent {
         }
     }
 
+    private val messageReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val message = intent?.getStringExtra("message") ?: return
+            showOverlayMessage(message)
+        }
+    }
+
+
+    private fun showOverlayMessage(message: String) {
+        val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        val imageView = ImageView(this).apply {
+            setImageResource(R.drawable.c5max_mid_pos)
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            scaleX = 0.5f
+            scaleY = 0.5f
+        }
+        val params = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
+            PixelFormat.TRANSLUCENT
+        )
+
+        params.gravity = Gravity.CENTER
+        windowManager.addView(imageView, params)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(4000)
+            windowManager.removeView(imageView)
+          //  delay(4000)
+          //  showOverlayMessage("")
+        }
+    }
+
+
     // яркость приборки data[3] в 0x15 проще добавить переменную и сохранить в eeprom
 //    0x20 = 0010 0000
 //    0x21 = 0010 0001
@@ -119,6 +161,16 @@ class UsbService : Service(), KoinComponent {
         createBackgroundWorkNotificationChannel()
         val notification = createNotification()
         startForeground(1, notification)
+        setupSuspensionUpdates()
+    }
+
+    private fun setupSuspensionUpdates() {
+        showOverlayMessage("сообщение")
+        CoroutineScope(Dispatchers.Main).launch {
+            canRepo.canDataInfoFlow.collect { message ->
+                if (message.suspensionState.mode == Mode.MED_TO_NORMAL) showOverlayMessage("сообщение")
+            }
+        }
     }
 
     private fun createNotification(): Notification {
@@ -132,8 +184,10 @@ class UsbService : Service(), KoinComponent {
         val builder = NotificationCompat.Builder(this, CHANEL_GPS)
 
         return builder.setContentTitle("CAN Service").setContentText("Collecting data...")
-            //.setSmallIcon(R.drawable.img_radiation)
-            .setContentIntent(pendingIntent).setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSmallIcon(R.drawable.img)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.img))
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setOngoing(true).setAutoCancel(false).build()
     }
 
@@ -211,6 +265,7 @@ class UsbService : Service(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver)
         unregisterReceiver(broadcastReceiver)
     }
 

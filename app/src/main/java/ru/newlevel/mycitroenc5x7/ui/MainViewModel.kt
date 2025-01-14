@@ -1,4 +1,4 @@
-package ru.newlevel.mycitroenc5x7.ui.suspension
+package ru.newlevel.mycitroenc5x7.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,8 +9,7 @@ import kotlinx.coroutines.launch
 import ru.newlevel.mycitroenc5x7.models.CanInfoModel
 import ru.newlevel.mycitroenc5x7.repository.CanRepo
 
-class SuspensionViewModel(private val canRepo: CanRepo) : ViewModel() {
-
+class MainViewModel(private val canRepo: CanRepo) : ViewModel() {
 
     private val _suspensionState = MutableStateFlow(CanInfoModel())
     val suspensionState: StateFlow<CanInfoModel> = _suspensionState.asStateFlow()

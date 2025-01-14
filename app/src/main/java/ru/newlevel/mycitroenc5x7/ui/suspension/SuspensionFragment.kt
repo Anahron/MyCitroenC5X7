@@ -1,42 +1,38 @@
 package ru.newlevel.mycitroenc5x7.ui.suspension
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import by.kirich1409.viewbindingdelegate.viewBinding
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.newlevel.mycitroenc5x7.R
+import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.databinding.FragmentSuspensionBinding
 
-class SuspensionFragment : Fragment() {
+class SuspensionFragment() : Fragment(R.layout.fragment_suspension) {
 
-    private var _binding: FragmentSuspensionBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private val binding: FragmentSuspensionBinding by viewBinding()
+    private val suspensionViewModel by viewModel<SuspensionViewModel>()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val suspensionViewModel =
-            ViewModelProvider(this).get(SuspensionViewModel::class.java)
 
-        _binding = FragmentSuspensionBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val textView: TextView = binding.textNotifications
-        suspensionViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
+        collectUiState()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun collectUiState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            suspensionViewModel.suspensionState.collect {
+                Log.e(TAG, " homeViewModel.uiState.collect ")
+//                when (it.suspensionState.mode) {
+//
+//                    }
+            }
+        }
     }
 }

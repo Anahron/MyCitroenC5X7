@@ -4,10 +4,8 @@ import android.util.Log
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.last
 import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.models.CanInfoModel
-import ru.newlevel.mycitroenc5x7.models.TripData
 
 
 class CanRepo(private val canUtils: CanUtils) {
@@ -21,7 +19,7 @@ class CanRepo(private val canUtils: CanUtils) {
     private val _logger = MutableSharedFlow<String>()
     val logger: SharedFlow<String> = _logger
 
-    suspend fun putLog(text: String){
+    suspend fun putLog(text: String) {
         _logger.emit(text)
     }
 
@@ -51,10 +49,10 @@ class CanRepo(private val canUtils: CanUtils) {
                         _canDataInfoFlow.value = canUtils.checkCanId(canData = can, _canDataInfoFlow.value)
                         Log.e(
                             TAG, "ID: 0x${canId.toString(16).uppercase()}, DLC: $dlc Data: ${
-                            canData.joinToString(", ") {
-                                "0x${it.toString(16).uppercase()}"
-                            }
-                        }")
+                                canData.joinToString(", ") {
+                                    "0x${it.toString(16).uppercase()}"
+                                }
+                            }")
                     } else {
                         Log.e(TAG, "CRC error")
                     }
@@ -66,20 +64,19 @@ class CanRepo(private val canUtils: CanUtils) {
             }
         }
     }
-}
 
 
 
-
-@OptIn(ExperimentalUnsignedTypes::class)
-private fun calculateCRC(canId: Int, dlc: Int, data: UByteArray): UByte {
-    var crc = canId xor dlc
-    for (byte in data) {
-        crc = crc xor byte.toInt()
+    @OptIn(ExperimentalUnsignedTypes::class)
+    private fun calculateCRC(canId: Int, dlc: Int, data: UByteArray): UByte {
+        var crc = canId xor dlc
+        for (byte in data) {
+            crc = crc xor byte.toInt()
+        }
+        return crc.toUByte()
     }
-    return crc.toUByte()
-}
 
+}
 
 @OptIn(ExperimentalUnsignedTypes::class)
 data class CanData(val canId: Int, val dlc: Int, val data: UByteArray) {

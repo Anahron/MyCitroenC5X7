@@ -1,13 +1,9 @@
 package ru.newlevel.mycitroenc5x7.ui.dashboard
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import ru.newlevel.mycitroenc5x7.repository.CanRepo
 
-class DashboardViewModel : ViewModel() {
+class DashboardViewModel(private val canRepo: CanRepo) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
-    }
-    val text: LiveData<String> = _text
+
 }

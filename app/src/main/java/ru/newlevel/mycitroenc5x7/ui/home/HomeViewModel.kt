@@ -11,7 +11,6 @@ import ru.newlevel.mycitroenc5x7.repository.CanRepo
 
 class HomeViewModel(private val canRepo: CanRepo) : ViewModel() {
 
-
     private val tripState = MutableStateFlow(UiTripModel())
     val state: StateFlow<UiTripModel> = tripState.asStateFlow()
 
