@@ -15,4 +15,6 @@
     <string name="instant_info">Мгновенное инфо</string>
     <string name="trip_1">Маршрут 1</string>
     <string name="Trip2">Маршрут 2</string>
+    <string name="celsius">°С</string>
+    <string name="sport_mode">Sport Mode</string>
 </resources>

@@ -31,7 +31,7 @@ class SpeedLimitSignView @JvmOverloads constructor(
 
     fun setSpeedLimit(speed: Int) {
         speedLimitText = speed.toString()
-        invalidate() // Перерисовываем View
+        invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {

@@ -100,8 +100,12 @@ class MainActivity : AppCompatActivity(), KoinComponent {
     private fun collectSuspensionState() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.suspensionState.collect {
-                    Log.e(TAG, " homeViewModel.uiState.collect ")
+                Log.e(TAG, " homeViewModel.uiState.collect ")
+                mainViewModel.state.collect {
+                    if (binding.tvTempExt.text != it.externalTemp)
+                        binding.tvTempExt.text = it.externalTemp
+                    if (it.suspensionState.isSport) binding.tvSportMode.visibility = View.VISIBLE
+                    else binding.tvSportMode.visibility = View.GONE
                     when (it.suspensionState.mode) {
                         Mode.NOT_GRANTED -> {
                             Toast.makeText(this@MainActivity, "Изменение высоты запрещено", Toast.LENGTH_LONG).show()
@@ -135,7 +139,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.setSpeedLimit(10)
                             binding.speedLimitSignView.visibility = View.VISIBLE
-                            //TODO send to can1 frame 0x268 speed limit on CMB
+                            //TODO send to can1 frame 0x268 speed limit on CMB not hete - in service
                         }
 
                         Mode.LOW_TO_NORMAL -> {

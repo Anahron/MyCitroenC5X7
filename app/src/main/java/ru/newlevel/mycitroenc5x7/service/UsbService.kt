@@ -19,7 +19,6 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
@@ -30,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.android.scope.serviceScope
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ru.newlevel.mycitroenc5x7.MainActivity

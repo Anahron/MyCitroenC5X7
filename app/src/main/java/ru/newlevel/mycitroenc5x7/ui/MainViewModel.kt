@@ -1,6 +1,5 @@
 package ru.newlevel.mycitroenc5x7.ui
 
-import androidx.core.view.TintableBackgroundView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +11,9 @@ import ru.newlevel.mycitroenc5x7.repository.CanRepo
 
 class MainViewModel(private val canRepo: CanRepo) : ViewModel() {
 
-    private val _suspensionState = MutableStateFlow(CanInfoModel())
-    val suspensionState: StateFlow<CanInfoModel> = _suspensionState.asStateFlow()
+    private val _state = MutableStateFlow(CanInfoModel())
+    val state: StateFlow<CanInfoModel> = _state.asStateFlow()
+
 
 
     init {
@@ -27,7 +27,7 @@ class MainViewModel(private val canRepo: CanRepo) : ViewModel() {
     private fun setupSuspensionStateUpdate() {
         viewModelScope.launch {
             canRepo.canDataInfoFlow.collect { entity ->
-                _suspensionState.value = entity
+                _state.value = entity
             }
         }
     }

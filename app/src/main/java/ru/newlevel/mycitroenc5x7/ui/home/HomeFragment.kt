@@ -51,7 +51,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     binding.textL100.text = it.litersPer100kmTrip1
                     binding.textSpeed.text = it.avgSpeedTrip1
                     binding.textDistance.text = it.totalDistanceTrip1
-                } else {
+                } else if (homeViewModel.uiState.value == 3){
                     binding.textL100.text = it.litersPer100kmTrip2
                     binding.textSpeed.text = it.avgSpeedTrip2
                     binding.textDistance.text = it.totalDistanceTrip2

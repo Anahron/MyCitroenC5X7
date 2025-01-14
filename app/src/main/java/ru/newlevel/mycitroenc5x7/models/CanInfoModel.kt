@@ -4,5 +4,6 @@ data class CanInfoModel(
     val trip1: TripData = TripData(),
     val trip2: TripData = TripData(),
     val momentTrip: MomentTripData = MomentTripData(),
-    val suspensionState: SuspensionState = SuspensionState()
+    val suspensionState: SuspensionState = SuspensionState(),
+    val externalTemp: String = "--"
 )
