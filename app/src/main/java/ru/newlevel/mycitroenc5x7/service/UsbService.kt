@@ -90,14 +90,14 @@ class UsbService : Service(), KoinComponent {
                 "GuideMeToHomeDuration" -> {
                     val duration = intent.getIntExtra("Duration", 15)
                     Log.e(TAG, "Duration: $duration")
-                    val byteDuration: Byte = when (duration) {
+                    val byteDuration = when (duration) {
                         0 -> 0x50
                         15 -> 0x51
                         30 -> 0x53
                         45 -> 0x54
-                        else -> {}
-                    } as Byte
-                    sendBinaryCommand(byteDuration) //Adaptive on/off
+                        else -> 0xFF
+                    }
+                    sendBinaryCommand(byteDuration.toByte()) //Adaptive on/off
                 }
 
                 "Adaptive" -> {
