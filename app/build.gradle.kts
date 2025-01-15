@@ -51,6 +51,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation ("androidx.media:media:1.7.0")
+
     //DI
     implementation(libs.io.insert.koin.koin.core)
     implementation(libs.koin.android)

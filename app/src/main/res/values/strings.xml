@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyCitroenC5X7</string>
+    <string name="app_name">MyCitroenC5</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -17,4 +17,9 @@
     <string name="Trip2">Маршрут 2</string>
     <string name="celsius">°С</string>
     <string name="sport_mode">Sport Mode</string>
+    <string name="adaptive_lighting">Адаптивные фары</string>
+    <string name="guide_me_home">Проводи меня домой</string>
+    <string name="cmb_brightness">Яркость приборной панели</string>
+    <string name="a_you_sure_to_reset">Вы уверены, что хотите сбросить пробег?</string>
+    <string name="cancel">Отмена</string>
 </resources>

@@ -1,0 +1,11 @@
+<!-- dialog_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/background"/> <!-- Цвет фона диалога -->
+
+    <!-- Создание рамки -->
+    <stroke
+        android:color="@color/main_yellow"
+         android:width="3dp" />
+
+    <corners android:radius="10dp"/> <!-- Округленные углы диалога -->
+</shape>

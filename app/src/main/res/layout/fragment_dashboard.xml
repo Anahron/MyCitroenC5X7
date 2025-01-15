@@ -27,15 +27,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.06" />
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="305dp"
-        android:layout_marginVertical="16dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/c5max_max_pos"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline3" />
 
     <TextView
         android:id="@+id/text_trip_computer"
@@ -96,13 +87,13 @@
 
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:visibility="visible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="64dp"
+        android:layout_marginStart="80dp"
         android:layout_marginTop="64dp"
         android:orientation="vertical"
-        android:layout_marginStart="80dp"
+        android:visibility="visible"
         app:layout_constraintHorizontal_bias="0.618"
         app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
@@ -131,9 +122,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="24dp"
-                android:layout_weight="1"
                 android:gravity="start"
-                android:text="Подсветка поворотов"
+                android:text="@string/adaptive_lighting"
                 android:textColor="@color/main_yellow"
                 android:textSize="34sp" />
 
@@ -141,7 +131,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -163,12 +153,95 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="24dp"
-                android:layout_weight="1"
                 android:gravity="start"
-                android:text="Проводи меня домой"
+                android:text="@string/guide_me_home"
                 android:textColor="@color/main_yellow"
                 android:textSize="34sp" />
+
+            <LinearLayout
+                android:id="@+id/guide_duration_setup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/ib_left"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/img_arrow_left" />
+
+                <TextView
+                    android:id="@+id/tv_guide_duration"
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="24dp"
+                    android:gravity="center"
+                    android:textColor="@color/main_yellow"
+                    android:textSize="34sp"
+                    tools:text="15" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/ib_right"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/img_arrow_right">
+                </androidx.appcompat.widget.AppCompatImageButton>
+            </LinearLayout>
         </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearBrighness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="64dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintHorizontal_bias="0.618"
+        app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="50dp"
+            android:gravity="start"
+            android:text="@string/cmb_brightness"
+            android:textColor="@color/main_yellow"
+            android:textSize="34sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <SeekBar
+            android:id="@+id/seekBar"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:layout_marginVertical="16dp"
+            android:max="15"
+            android:progress="8"
+            android:progressDrawable="@drawable/custom_seekbar"
+            android:thumb="@drawable/custom_thumb" />
+
+        <ImageView
+            android:id="@+id/iv_day_night"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="0"
+            android:layout_gravity="center"
+            android:src="@drawable/vector_moon" />
+    </LinearLayout>
 
     </LinearLayout>
 
@@ -177,10 +250,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="64dp"
-        android:layout_marginTop="64dp"
-        android:visibility="gone"
-        android:orientation="vertical"
         android:layout_marginStart="80dp"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.618"
         app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">

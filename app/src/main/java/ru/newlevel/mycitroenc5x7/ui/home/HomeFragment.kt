@@ -1,10 +1,14 @@
 package ru.newlevel.mycitroenc5x7.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -21,7 +25,28 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.buttonReset.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.custom_dialog, null)
+            val dialogBuilder = AlertDialog.Builder(requireContext())
+                .setView(dialogView)
 
+
+            val buttonYes = dialogView.findViewById<Button>(R.id.buttonYes)
+            val buttonNo = dialogView.findViewById<Button>(R.id.buttonNo)
+
+            val dialog = dialogBuilder.create()
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+            buttonYes.setOnClickListener {
+                sendResetTrip(homeViewModel.uiState.value)
+                dialog.dismiss()
+            }
+
+            buttonNo.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
         binding.tripGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
             when (checkedId) {
                 R.id.button_1 -> if (isChecked) {
@@ -41,6 +66,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         collectTripState()
     }
 
+
+    fun sendResetTrip(position: Int) {
+        val intent = Intent("ru.newlevel.mycitroenc5x7.service.LOCAL_BROADCAST")
+        intent.putExtra("message", if (position == 2) "ResetTrip1" else if (position == 3) "ResetTrip2" else "ResetTripMoment")
+        intent.putExtra("reset", true)
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
+    }
+
     private fun collectTripState() {
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.state.collect {
@@ -51,7 +84,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     binding.textL100.text = it.litersPer100kmTrip1
                     binding.textSpeed.text = it.avgSpeedTrip1
                     binding.textDistance.text = it.totalDistanceTrip1
-                } else if (homeViewModel.uiState.value == 3){
+                } else if (homeViewModel.uiState.value == 3) {
                     binding.textL100.text = it.litersPer100kmTrip2
                     binding.textSpeed.text = it.avgSpeedTrip2
                     binding.textDistance.text = it.totalDistanceTrip2

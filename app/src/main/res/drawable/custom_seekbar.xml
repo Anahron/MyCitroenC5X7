@@ -1,0 +1,21 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Неактивная полоса (background) -->
+    <item>
+        <shape android:shape="rectangle">
+            <size android:height="6dp" />
+            <solid android:color="@color/semi_yellow" /> <!-- Цвет неактивной полосы -->
+        </shape>
+    </item>
+
+    <!-- Активная полоса (progress) -->
+    <item>
+        <clip>
+            <shape android:shape="rectangle">
+                <size android:height="6dp" />
+                <solid android:color="@color/main_yellow" /> <!-- Цвет активной полосы -->
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

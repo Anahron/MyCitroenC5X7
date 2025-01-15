@@ -76,6 +76,9 @@ class CanRepo(private val canUtils: CanUtils) {
     }
 
 
+    fun sendBrightness(level: Int, isDay: Boolean){
+
+    }
 
     @OptIn(ExperimentalUnsignedTypes::class)
     private fun calculateCRC(canId: Int, dlc: Int, data: UByteArray): UByte {

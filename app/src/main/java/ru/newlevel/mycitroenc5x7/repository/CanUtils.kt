@@ -3,6 +3,7 @@ package ru.newlevel.mycitroenc5x7.repository
 import ru.newlevel.mycitroenc5x7.models.CanInfoModel
 import ru.newlevel.mycitroenc5x7.models.Mode
 import ru.newlevel.mycitroenc5x7.models.MomentTripData
+import ru.newlevel.mycitroenc5x7.models.PersonSettingsStatus
 import ru.newlevel.mycitroenc5x7.models.SuspensionState
 import ru.newlevel.mycitroenc5x7.models.TripData
 
@@ -30,11 +31,52 @@ class CanUtils {
             0x0F6 -> { //odo, temp coolant, temp external, ignition, turns light, reverse data[6] Temperature = round(T/2.0 - 39.5) °C (0...250 = -40...+85) или canMsgRcv.data[5] >> 1) - 40 по людвигу TODO тест
                 return canInfoModel.copy(externalTemp = calculateTemperature(canData).toString())
             }
+
+            0x260 -> { // с кан0 получать Personalization settings status    0x361 Personalization menus availability т.е. только доступность
+                return canInfoModel.copy(personSettingsStatus = decodePersonSettingsStatus(canData, canInfoModel.personSettingsStatus))
+            }
+            0x036 -> { // brightness
+                return canInfoModel.copy(personSettingsStatus = decodeBrightness(canData, canInfoModel.personSettingsStatus))
+            }
         }
         return canInfoModel
     }
 
+    // data[3] brightness  0010 1110 5 бит с конца 0 - день 1 - ночь, 4 бит dark mode, первые 0-3 - яркость - 0-15 "20" > "2F"
+    private fun decodeBrightness(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus{
+        val isDay = !checkBit(canData.data[3],5)
+        val cmbBrightness = canData.data[3].toInt() and 0x0F
+        return personSettingsStatus.copy(isDay = isDay, cmbBrightness = cmbBrightness)
+    }
 
+    //  bitRead(canMsgRcv.data[2], 7)); // Adaptative lighting
+    //  bitRead(canMsgRcv.data[2], 5)); // Guide-me home lighting
+    //  bitRead(canMsgRcv.data[2], 1)); // Duration Guide-me home lighting (2b)
+    //  bitRead(canMsgRcv.data[2], 0)); // Duration Guide-me home lighting (2b)
+    //  bitRead(canMsgRcv.data[5], 6)); // AAS - парктроник  +
+    //  bitRead(canMsgRcv.data[1], 1)); // Driver Welcome
+    //  bitRead(canMsgRcv.data[1], 0)); // Automatic parking brake
+    //canMsgSnd.data[3], 7, 1); // DSG Reset ?????
+
+    private fun decodePersonSettingsStatus(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
+        val durationBits = ((canData.data[2].toInt() shr 0) and 0b11) // Маска 0b11 захватывает только 2 бита
+        val durationInSeconds = when (durationBits) {
+            0b00 -> 0
+            0b01 -> 15
+            0b10 -> 30
+            0b11 -> 45
+            else -> 0
+        }
+        personSettingsStatus.copy(
+            adaptiveLighting = checkBit(canData.data[2],7),
+            guideMeHome = checkBit(canData.data[2],5),
+            parktronics = checkBit(canData.data[5],6),
+            driverWelcome = checkBit(canData.data[1],1),
+            automaticHandbrake = checkBit(canData.data[1],0),
+            durationGuide = durationInSeconds
+        )
+        return personSettingsStatus
+    }
 //    00 00 28 40 00 00 00	h	low to normal  28 = 10 1000   40 = 100 0000 +
 //    00 00 29 40 00 00 00	h	low to med     29 = 10 1001   40 = 100 0000 +
 //    00 00 2B 40 00 00 00	h	low to high    2b = 10 1011   40 = 100 0000 +
@@ -51,11 +93,10 @@ class CanUtils {
 //
 //    00 00 38 00 00 00 00		not granted   38 = 11 1000    00-           +
 
-//    00 00 20 0C 00 00 00		high          20 = 10 0000    0C = 000 1100 +
+    //    00 00 20 0C 00 00 00		high          20 = 10 0000    0C = 000 1100 +
 //    00 00 20 08 00 00 00		low           20 = 10 0000    08 = 000 1000 +
 //    00 00 20 04 00 00 00		mid           20 = 10 0000    04 = 000 0100 +
 //    00 00 20 00 00 00 00		normal        20 = 10 0000    00-           +
-
     private fun checkSuspensionStatus(canData: CanData, suspensionState: SuspensionState): SuspensionState {
         val isSport = checkBit(canData.data[3], 1)
 
