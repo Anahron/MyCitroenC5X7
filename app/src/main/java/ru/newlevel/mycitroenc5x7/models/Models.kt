@@ -7,3 +7,13 @@ data class MomentTripData(val totalDistanceFinish: Int = 0, val totalDistance: I
 data class PersonSettingsStatus(val adaptiveLighting: Boolean = false, val guideMeHome: Boolean = false,
     val durationGuide: Int = 0, val parktronics: Boolean = false, val driverWelcome: Boolean = false,
     val automaticHandbrake: Boolean = false, val cmbBrightness: Int = 0, val isDay: Boolean = true)
+
+data class Alert(
+    val message: String,
+    val importance: Importance
+)
+enum class Importance {
+    INFORMATION,
+    WARNING,
+    STOP
+}

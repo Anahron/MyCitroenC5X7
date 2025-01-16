@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_suspension"
-        android:name="ru.newlevel.mycitroenc5x7.ui.suspension.SuspensionFragment"
+        android:name="ru.newlevel.mycitroenc5x7.ui.alerts.AlertsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_suspension" />
+        tools:layout="@layout/fragment_alerts" />
 </navigation>

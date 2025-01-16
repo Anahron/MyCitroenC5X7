@@ -17,7 +17,7 @@
         android:id="@+id/navigation_suspension"
         android:background="@color/main_yellow"
         android:layout_margin="26dp"
-        android:icon="@drawable/vector_susp"
-        android:title="@string/suspension" />
+        android:icon="@drawable/vector_alert"
+        android:title="Журнал ошибок" />
 
 </menu>

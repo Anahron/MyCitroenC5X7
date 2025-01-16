@@ -6,5 +6,6 @@ data class CanInfoModel(
     val momentTrip: MomentTripData = MomentTripData(),
     val suspensionState: SuspensionState = SuspensionState(),
     val personSettingsStatus: PersonSettingsStatus = PersonSettingsStatus(),
-    val externalTemp: String = "--" //TODO --
+    val externalTemp: String = "--",
+    val alerts: List<Alert> = mutableListOf<Alert>()
 )

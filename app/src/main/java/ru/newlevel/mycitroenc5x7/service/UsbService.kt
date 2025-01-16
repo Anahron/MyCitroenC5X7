@@ -217,6 +217,10 @@ class UsbService : Service(), KoinComponent {
         serviceScope.launch(Dispatchers.Main) {
             delay(8000)
             showOverlayMessage(R.drawable.alert_not_granted)
+            delay(8000)
+            showOverlayMessage(R.drawable.alert_normal_to_max_pos)
+            delay(8000)
+            showOverlayMessage(R.drawable.alert_max_pos)
         }
         return START_STICKY
     }

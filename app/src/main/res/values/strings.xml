@@ -22,4 +22,12 @@
     <string name="cmb_brightness">Яркость приборной панели</string>
     <string name="a_you_sure_to_reset">Вы уверены, что хотите сбросить пробег?</string>
     <string name="cancel">Отмена</string>
+    <string name="parktronics">Парктроник</string>
+    <string name="driver_opening">Комфортная посадка</string>
+    <string name="auto_handbrake">Авто стояночный тормоз</string>
+    <string name="alerts_journal">Журнал ошибок</string>
+    <string name="lightings">Освещение</string>
+    <string name="comfort">Комфорт</string>
+    <string name="cmb">Приборная панель</string>
+    <string name="can_monitor">CAN монитор</string>
 </resources>

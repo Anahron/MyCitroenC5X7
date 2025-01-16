@@ -1,6 +1,8 @@
 package ru.newlevel.mycitroenc5x7.repository
 
+import ru.newlevel.mycitroenc5x7.models.Alert
 import ru.newlevel.mycitroenc5x7.models.CanInfoModel
+import ru.newlevel.mycitroenc5x7.models.Importance
 import ru.newlevel.mycitroenc5x7.models.Mode
 import ru.newlevel.mycitroenc5x7.models.MomentTripData
 import ru.newlevel.mycitroenc5x7.models.PersonSettingsStatus
@@ -35,16 +37,78 @@ class CanUtils {
             0x260 -> { // с кан0 получать Personalization settings status    0x361 Personalization menus availability т.е. только доступность
                 return canInfoModel.copy(personSettingsStatus = decodePersonSettingsStatus(canData, canInfoModel.personSettingsStatus))
             }
+
             0x036 -> { // brightness
                 return canInfoModel.copy(personSettingsStatus = decodeBrightness(canData, canInfoModel.personSettingsStatus))
+            }
+
+            0x120 -> { //alert journal
+                return canInfoModel.copy(alerts = decodeAlertsJournal(canData))
             }
         }
         return canInfoModel
     }
 
+    private fun decodeAlertsJournal(canData: CanData): List<Alert> {
+        val canMsgRcv = canData.data
+        val descriptions = mutableListOf<Alert>()
+        //     if (!checkBit(canMsgRcv[0], 7) && checkBit(canMsgRcv[0], 6)) {
+        if (checkBit(canMsgRcv[1], 7)) descriptions.add(Alert("Низкое давления моторного масла: остановите автомобиль", Importance.STOP))
+        if (checkBit(canMsgRcv[1], 6)) descriptions.add(Alert("Высокая температура двигателя: остановите автомобиль", Importance.STOP))
+        if (checkBit(canMsgRcv[1], 5)) descriptions.add(Alert("Неисправность системы зарядки: требуется ремонт", Importance.WARNING))
+        if (checkBit(canMsgRcv[1], 4)) descriptions.add(Alert("Неисправность тормозной системы: остановите автомобиль", Importance.STOP))
+        if (checkBit(canMsgRcv[1], 2)) descriptions.add(Alert("Неисправность рулевого управления: остановите автомобиль", Importance.STOP))
+        if (checkBit(canMsgRcv[2], 7)) descriptions.add(Alert("Низкий уровень моторного масла", Importance.WARNING))
+        //  if (checkBit(canMsgRcv[2], 5)) descriptions.add("Правая передняя дверь")
+        //  if (checkBit(canMsgRcv[2], 4)) descriptions.add("Левая передняя дверь")
+        //  if (checkBit(canMsgRcv[2], 3)) descriptions.add("Правая задняя дверь")
+        // if (checkBit(canMsgRcv[2], 2)) descriptions.add("Левая задняя дверь")
+        if (checkBit(canMsgRcv[3], 6)) descriptions.add(Alert("Неисправность системы ESP/ASR, отремонтируйте автомобиль", Importance.WARNING))
+        if (checkBit(canMsgRcv[3], 2)) descriptions.add(Alert("Замените тормозные колодки", Importance.WARNING))
+        if (checkBit(canMsgRcv[3], 0)) descriptions.add(Alert("Неисправность подушек безопасности или преднатяжителей ремней", Importance.WARNING))
+        if (checkBit(canMsgRcv[4], 5)) descriptions.add(Alert("Неисправность тормозной системы ABS, отремонтируйте автомобиль", Importance.WARNING))
+        if (checkBit(canMsgRcv[4], 2)) descriptions.add(Alert("Низкий уровень добавки для сажевого фильтра", Importance.WARNING))
+        if (checkBit(canMsgRcv[4], 0)) descriptions.add(Alert("Неисправность подвески, отремонтируйте автомобиль", Importance.WARNING))
+        if (checkBit(canMsgRcv[5], 2)) descriptions.add(Alert("Неисправность иммобилайзера", Importance.WARNING))
+        if (checkBit(canMsgRcv[6], 1)) descriptions.add(Alert("Долейте уровень жидкости для стеклоомывателя", Importance.INFORMATION))
+        //   }
+
+        //   if (checkBit(canMsgRcv[0], 7) && !checkBit(canMsgRcv[0], 6)) {
+        if (checkBit(canMsgRcv[1], 4) || checkBit(canMsgRcv[1], 3) || checkBit(canMsgRcv[1], 2) || checkBit(canMsgRcv[1], 1)) descriptions.add(Alert("Прокол: замените или отремонтируйте колесо", Importance.STOP))
+        if (checkBit(canMsgRcv[1], 0) || checkBit(canMsgRcv[2], 7) || checkBit(canMsgRcv[2], 6) || checkBit(canMsgRcv[2], 5)) descriptions.add(Alert("Проверьте габаритные огни", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[2], 0)) descriptions.add(Alert("Правый стоп-сигнал неисправен", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[3], 7)) descriptions.add(Alert("Левый стоп-сигнал неисправен", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[3], 6)) descriptions.add(Alert("Правая передняя противотуманная фара неисправна", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[3], 5)) descriptions.add(Alert("Левая передняя противотуманная фара неисправна", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[3], 2) || checkBit(canMsgRcv[3], 1) || checkBit(canMsgRcv[3], 0) || checkBit(canMsgRcv[4], 7)) descriptions.add(Alert("Проверьте указатели поворота", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[4], 6)) descriptions.add(Alert("Правая лампа заднего хода неисправна", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[4], 5)) descriptions.add(Alert("Левая лампа заднего хода неисправна", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[5], 4)) descriptions.add(Alert("Неисправность системы помощи при парковке", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[5], 1)) descriptions.add(Alert("Передняя левая шина: отрегулируйте давление", Importance.WARNING))
+        if (checkBit(canMsgRcv[5], 0)) descriptions.add(Alert("Передняя правая шина: отрегулируйте давление", Importance.WARNING))
+        if (checkBit(canMsgRcv[6], 7)) descriptions.add(Alert("Задняя правая шина: отрегулируйте давление", Importance.WARNING))
+        if (checkBit(canMsgRcv[6], 5)) descriptions.add(Alert("Задняя левая шина: отрегулируйте давление", Importance.WARNING))
+        if (checkBit(canMsgRcv[6], 3) || checkBit(canMsgRcv[6], 1)) descriptions.add(Alert("Неисправность очистки выхлопных газов", Importance.WARNING))
+        //     }
+
+        // if (checkBit(canMsgRcv[0], 7) && checkBit(canMsgRcv[0], 6)) {
+        if (checkBit(canMsgRcv[2], 4)) descriptions.add(Alert("Неисправность стояночного тормоза", Importance.WARNING))
+        if (checkBit(canMsgRcv[3], 2)) descriptions.add(Alert("Неисправность АКПП", Importance.WARNING))
+        if (checkBit(canMsgRcv[4], 1)) descriptions.add(Alert("Неисправность подвески: ограничьте скорость до 90 км/ч", Importance.WARNING))
+        if (checkBit(canMsgRcv[5], 3)) descriptions.add(Alert("Давление в передней левой шине не контролируется", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[5], 2)) descriptions.add(Alert("Давление в передней правой шине не контролируется", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[5], 1)) descriptions.add(Alert("Давление в задней правой шине не контролируется", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[5], 0)) descriptions.add(Alert("Давление в задней левой шине не контролируется", Importance.INFORMATION))
+        if (checkBit(canMsgRcv[6], 7)) descriptions.add(Alert("Неисправность подвески: отремонтируйте автомобиль", Importance.WARNING))
+        if (checkBit(canMsgRcv[6], 6)) descriptions.add(Alert("Неисправность усилителя рулевого управления: отремонтируйте автомобиль", Importance.WARNING))
+        //  }
+        return descriptions
+    }
+
+
     // data[3] brightness  0010 1110 5 бит с конца 0 - день 1 - ночь, 4 бит dark mode, первые 0-3 - яркость - 0-15 "20" > "2F"
-    private fun decodeBrightness(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus{
-        val isDay = !checkBit(canData.data[3],5)
+    private fun decodeBrightness(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
+        val isDay = !checkBit(canData.data[3], 5)
         val cmbBrightness = canData.data[3].toInt() and 0x0F
         return personSettingsStatus.copy(isDay = isDay, cmbBrightness = cmbBrightness)
     }
@@ -68,11 +132,11 @@ class CanUtils {
             else -> 0
         }
         personSettingsStatus.copy(
-            adaptiveLighting = checkBit(canData.data[2],7),
-            guideMeHome = checkBit(canData.data[2],5),
-            parktronics = checkBit(canData.data[5],6),
-            driverWelcome = checkBit(canData.data[1],1),
-            automaticHandbrake = checkBit(canData.data[1],0),
+            adaptiveLighting = checkBit(canData.data[2], 7),
+            guideMeHome = checkBit(canData.data[2], 5),
+            parktronics = checkBit(canData.data[5], 6),
+            driverWelcome = checkBit(canData.data[1], 1),
+            automaticHandbrake = checkBit(canData.data[1], 0),
             durationGuide = durationInSeconds
         )
         return personSettingsStatus

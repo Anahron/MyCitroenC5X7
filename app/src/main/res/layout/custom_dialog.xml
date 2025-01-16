@@ -1,46 +1,51 @@
 <!-- custom_dialog.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background"
     android:orientation="vertical"
     android:paddingHorizontal="20dp"
-    android:paddingTop="20dp"
-    android:background="@drawable/dialog_background">
+    android:paddingTop="20dp">
 
     <TextView
         android:id="@+id/dialogMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/a_you_sure_to_reset"
         android:textColor="@color/main_yellow"
-        android:textSize="24sp"
-        android:gravity="center" />
+        android:textSize="24sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/buttonNo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            android:textSize="22sp"
-            android:textAllCaps="false"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginVertical="16dp"
             android:backgroundTint="@color/semi_red"
-            android:layout_margin="16dp"/>
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textSize="22sp"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/buttonYes"
             android:layout_width="wrap_content"
-            android:textColor="@color/background"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:textSize="22sp"
-            android:textAllCaps="false"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginVertical="16dp"
             android:backgroundTint="@color/green"
-            android:text="@string/reset" />
+            android:text="@string/reset"
+            android:textAllCaps="false"
+            android:textColor="@color/background"
+            android:textSize="22sp"
+            tools:ignore="ButtonStyle" />
     </LinearLayout>
 </LinearLayout>

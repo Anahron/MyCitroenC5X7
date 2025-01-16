@@ -26,8 +26,19 @@ class CanRepo(private val canUtils: CanUtils) {
         _logger.emit(text)
     }
 
+    @OptIn(ExperimentalUnsignedTypes::class)
     fun setToBackground(isBackground: Boolean){
         backgroundState.value = isBackground
+        val uByteArray = ubyteArrayOf(
+            0xFF.toUByte(),
+            0xFF.toUByte(),
+            0xFF.toUByte(),
+            0xFF.toUByte(),
+            0xFF.toUByte(),
+            0xFF.toUByte(),
+            0xFF.toUByte()
+        )
+        _canDataInfoFlow.value = canUtils.checkCanId(canData = CanData(canId = 0x120, dlc = 8, uByteArray), CanInfoModel() )
     }
 
     fun getIsBackground(): Boolean = backgroundState.value
@@ -73,11 +84,6 @@ class CanRepo(private val canUtils: CanUtils) {
                 Log.e(TAG, "Invalid packet size")
             }
         }
-    }
-
-
-    fun sendBrightness(level: Int, isDay: Boolean){
-
     }
 
     @OptIn(ExperimentalUnsignedTypes::class)

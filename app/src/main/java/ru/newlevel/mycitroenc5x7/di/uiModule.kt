@@ -7,7 +7,7 @@ import ru.newlevel.mycitroenc5x7.repository.CanUtils
 import ru.newlevel.mycitroenc5x7.ui.MainViewModel
 import ru.newlevel.mycitroenc5x7.ui.dashboard.DashboardViewModel
 import ru.newlevel.mycitroenc5x7.ui.home.HomeViewModel
-import ru.newlevel.mycitroenc5x7.ui.suspension.SuspensionViewModel
+import ru.newlevel.mycitroenc5x7.ui.alerts.AlertsViewModel
 
 
 val uiModule = module {
@@ -21,7 +21,7 @@ val uiModule = module {
     }
 
     viewModel {
-        SuspensionViewModel(
+        AlertsViewModel(
             canRepo = get()
         )
     }
