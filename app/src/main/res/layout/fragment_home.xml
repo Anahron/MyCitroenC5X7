@@ -25,6 +25,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.72" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.42" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -63,12 +69,12 @@
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/trip_group"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:orientation="vertical"
         app:checkedButton="@id/button_1"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
         app:layout_constraintStart_toStartOf="@+id/text_trip_computer"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer"
         app:selectionRequired="true"
@@ -76,7 +82,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_1"
-            android:layout_width="350dp"
+            android:layout_width="match_parent"
             android:layout_height="64dp"
             android:backgroundTint="@color/btn_color_toggle"
             android:state_checked="true"
@@ -87,7 +93,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_2"
-            android:layout_width="350dp"
+            android:layout_width="match_parent"
             android:layout_height="64dp"
             android:backgroundTint="@color/btn_color_toggle"
             android:text="@string/trip_1"
@@ -97,7 +103,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_3"
-            android:layout_width="350dp"
+            android:layout_width="match_parent"
             android:layout_height="64dp"
             android:backgroundTint="@color/btn_color_toggle"
             android:text="@string/Trip2"
@@ -110,45 +116,15 @@
         android:id="@+id/linear_moment_trip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="visible"
         android:layout_marginVertical="64dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.728"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/button_reset"
+        app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginVertical="16dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/vector_path" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginVertical="16dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/c5mini" />
-
-            <TextView
-                android:id="@+id/text_distance_left_moment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="24dp"
-                android:gravity="end"
-                android:text="9999 км"
-                android:textColor="@color/main_yellow"
-                android:textSize="30sp" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -168,12 +144,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginVertical="16dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/vector_path" />
+
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -181,6 +159,7 @@
                 android:layout_marginStart="4dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/vector_gas_tank" />
+
             <TextView
                 android:id="@+id/text_distance_traveled_moment"
                 android:layout_width="match_parent"
@@ -189,7 +168,7 @@
                 android:layout_marginStart="24dp"
                 android:fontFamily="sans-serif"
                 android:gravity="end"
-                android:text="30 км/ч"
+                android:text="@string/_0"
                 android:textColor="@color/main_yellow"
                 android:textSize="30sp" />
         </LinearLayout>

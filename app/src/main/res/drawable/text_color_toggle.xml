@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Цвет текста для выбранной кнопки -->
-    <item android:state_checked="true" android:color="#FFFFFF" />
-    <!-- Цвет текста для невыбранной кнопки -->
-    <item android:color="#757575" />
-</selector>

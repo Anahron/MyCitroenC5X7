@@ -14,6 +14,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.newlevel.mycitroenc5x7.R
 import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.databinding.FragmentDashboardBinding
+import ru.newlevel.mycitroenc5x7.models.PersonSettingsStatus
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
@@ -27,6 +28,24 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         collectUiState()
         setupLightingListeners()
         setupComfortListeners()
+        setUi(dashboardViewModel.state.value)
+    }
+
+    private fun setUi(status: PersonSettingsStatus) {
+        binding.ivDayNight.setImageResource(if (status.isDay) R.drawable.vector_sun else R.drawable.vector_moon)
+        binding.switchDirHeadlamp.isChecked = status.adaptiveLighting
+        if (status.guideMeHome) {
+            binding.guideDurationSetup.visibility = View.VISIBLE
+            binding.switchGuideToHome.isChecked = true
+        } else {
+            binding.guideDurationSetup.visibility = View.GONE
+            binding.switchGuideToHome.isChecked = false
+        }
+        binding.tvGuideDuration.text = status.durationGuide.toString()
+        binding.switchHandbrake.isChecked = status.automaticHandbrake
+        binding.switchParktronic.isChecked = status.parktronics
+        binding.switchDriverPosition.isChecked = status.driverWelcome
+        binding.seekBar.progress = status.cmbBrightness
     }
 
     private fun setupComfortListeners() {
@@ -138,19 +157,21 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                     binding.linearLayout2.visibility = View.GONE
                     binding.linearBrighness.visibility = View.GONE
                     binding.linearLayout1.visibility = View.VISIBLE
+                    setUi(dashboardViewModel.state.value)
                 }
 
                 R.id.button_2 -> if (isChecked) {
                     binding.linearLayout1.visibility = View.GONE
                     binding.linearBrighness.visibility = View.GONE
                     binding.linearLayout2.visibility = View.VISIBLE
-
+                    setUi(dashboardViewModel.state.value)
                 }
 
                 R.id.button_3 -> if (isChecked) {
                     binding.linearLayout2.visibility = View.GONE
                     binding.linearLayout1.visibility = View.GONE
                     binding.linearBrighness.visibility = View.VISIBLE
+                    setUi(dashboardViewModel.state.value)
                 }
             }
         }
@@ -186,21 +207,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
     private fun collectUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            dashboardViewModel.state.collect {
-                binding.ivDayNight.setImageResource(if (it.isDay) R.drawable.vector_sun else R.drawable.vector_moon)
-                binding.switchDirHeadlamp.isChecked = it.adaptiveLighting
-                if (it.guideMeHome) {
-                    binding.guideDurationSetup.visibility = View.VISIBLE
-                    binding.switchGuideToHome.isChecked = true
-                } else {
-                    binding.guideDurationSetup.visibility = View.GONE
-                    binding.switchGuideToHome.isChecked = false
-                }
-                binding.tvGuideDuration.text = it.durationGuide.toString()
-                binding.switchHandbrake.isChecked = it.automaticHandbrake
-                binding.switchParktronic.isChecked = it.parktronics
-                binding.switchDriverPosition.isChecked = it.driverWelcome
-                binding.seekBar.progress = it.cmbBrightness
+            dashboardViewModel.state.collect { it ->
+                setUi(it)
             }
         }
     }

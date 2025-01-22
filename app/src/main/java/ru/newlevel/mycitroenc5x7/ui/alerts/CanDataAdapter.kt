@@ -53,7 +53,7 @@ class CanDataAdapter : RecyclerView.Adapter<CanDataAdapter.CanDataViewHolder>() 
 
         @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
         fun bind(canData: CanData) {
-            tvId.text = canData.canId.toString()
+            tvId.text = canData.canId.toString(16).uppercase()
             tvDlc.text = canData.dlc.toString()
 
             tvData0.text = ""

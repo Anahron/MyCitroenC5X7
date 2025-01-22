@@ -5,7 +5,6 @@
     <string name="title_notifications">Notifications</string>
     <string name="path_computer">Путевой компьютер</string>
     <string name="personalization">Персонализация</string>
-    <string name="suspension">Подвеска</string>
     <string name="_4">4</string>
     <string name="_3">3</string>
     <string name="_2">2</string>
@@ -17,7 +16,7 @@
     <string name="Trip2">Маршрут 2</string>
     <string name="celsius">°С</string>
     <string name="sport_mode">Sport Mode</string>
-    <string name="adaptive_lighting">Адаптивные фары</string>
+    <string name="adaptive_lighting">Управляемые фары</string>
     <string name="guide_me_home">Проводи меня домой</string>
     <string name="cmb_brightness">Яркость приборной панели</string>
     <string name="a_you_sure_to_reset">Вы уверены, что хотите сбросить пробег?</string>
@@ -30,4 +29,16 @@
     <string name="comfort">Комфорт</string>
     <string name="cmb">Приборная панель</string>
     <string name="can_monitor">CAN монитор</string>
+    <string name="duration_in_sec">Длительность, сек</string>
+    <string name="_0">0 км</string>
+    <string name="id">ID</string>
+    <string name="dlc">DLC</string>
+    <string name="d_0">D[0]</string>
+    <string name="d_1">D[1]</string>
+    <string name="d_2">D[2]</string>
+    <string name="d_3">D[3]</string>
+    <string name="d_7">D[7]</string>
+    <string name="d_6">D[6]</string>
+    <string name="d_5">D[5]</string>
+    <string name="d_4">D[4]</string>
 </resources>

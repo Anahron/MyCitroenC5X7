@@ -28,6 +28,13 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.06" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.42" />
+
     <TextView
         android:id="@+id/text_trip_computer"
         android:layout_width="wrap_content"
@@ -42,12 +49,12 @@
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/materialButtonToggleGroup"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:orientation="vertical"
         app:checkedButton="@id/button_1"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
         app:layout_constraintStart_toStartOf="@+id/text_trip_computer"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer"
         app:selectionRequired="true"
@@ -76,7 +83,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_3"
-            android:layout_width="350dp"
+            android:layout_width="match_parent"
             android:layout_height="64dp"
             android:backgroundTint="@color/btn_color_toggle"
             android:text="@string/cmb"
@@ -89,13 +96,11 @@
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="36dp"
         android:layout_marginVertical="64dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="64dp"
         android:orientation="vertical"
         android:visibility="visible"
-        app:layout_constraintHorizontal_bias="0.618"
-        app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
+        app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
 
 
@@ -158,38 +163,48 @@
                 android:textColor="@color/main_yellow"
                 android:textSize="30sp" />
 
-            <LinearLayout
-                android:id="@+id/guide_duration_setup"
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/guide_duration_setup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:orientation="horizontal">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:orientation="horizontal">
+                android:layout_marginStart="96dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/duration_in_sec"
+                android:textColor="@color/main_yellow"
+                android:textSize="30sp" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/ib_left"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/img_arrow_left" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/ib_left"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/img_arrow_left" />
 
-                <TextView
-                    android:id="@+id/tv_guide_duration"
-                    android:layout_width="45dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginHorizontal="24dp"
-                    android:gravity="center"
-                    android:textColor="@color/main_yellow"
-                    android:textSize="30sp"
-                    tools:text="15" />
+            <TextView
+                android:id="@+id/tv_guide_duration"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:gravity="center"
+                android:textColor="@color/main_yellow"
+                android:textSize="30sp"
+                tools:text="15" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/ib_right"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/img_arrow_right" />
-            </LinearLayout>
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/ib_right"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/img_arrow_right" />
         </LinearLayout>
-
 
     </LinearLayout>
 
@@ -197,13 +212,12 @@
         android:id="@+id/linearBrighness"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="36dp"
         android:layout_marginVertical="64dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="64dp"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.618"
-        app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
+        app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
 
 
@@ -251,13 +265,12 @@
         android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="36dp"
         android:layout_marginVertical="64dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="64dp"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.618"
-        app:layout_constraintStart_toEndOf="@+id/materialButtonToggleGroup"
+        app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
 
 

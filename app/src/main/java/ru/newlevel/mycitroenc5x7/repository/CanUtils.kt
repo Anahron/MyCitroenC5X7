@@ -14,35 +14,35 @@ class CanUtils {
 
     fun checkCanId(canData: CanData, canInfoModel: CanInfoModel): CanInfoModel {
         when (canData.canId) {
-            0x2A1 -> { //trip1
+            0x2A1 -> { // + trip1
                 return canInfoModel.copy(trip1 = decodeTrip(canData))
             }
 
-            0x261 -> { //trip2
+            0x261 -> { // + trip2
                 return canInfoModel.copy(trip2 = decodeTrip(canData))
             }
 
-            0x221 -> { // moment trip
+            0x221 -> { // * moment trip
                 return canInfoModel.copy(momentTrip = decodeTripMomentData(canData))
             }
 
-            0x0E8 -> { // suspension status
+            0x0E8 -> { // + suspension status
                 return canInfoModel.copy(suspensionState = checkSuspensionStatus(canData, canInfoModel.suspensionState))
             }
 
-            0x0F6 -> { //odo, temp coolant, temp external, ignition, turns light, reverse data[6] Temperature = round(T/2.0 - 39.5) °C (0...250 = -40...+85) или canMsgRcv.data[5] >> 1) - 40 по людвигу TODO тест
+            0x0F6 -> { // + odo, temp coolant, temp external, ignition, turns light, reverse data[6] Temperature = round(T/2.0 - 39.5) °C (0...250 = -40...+85) или canMsgRcv.data[5] >> 1) - 40 по людвигу
                 return canInfoModel.copy(externalTemp = calculateTemperature(canData).toString())
             }
 
-            0x260 -> { // с кан0 получать Personalization settings status    0x361 Personalization menus availability т.е. только доступность
+            0x260 -> { // + с кан0 получать Personalization settings status    0x361 Personalization menus availability т.е. только доступность
                 return canInfoModel.copy(personSettingsStatus = decodePersonSettingsStatus(canData, canInfoModel.personSettingsStatus))
             }
 
-            0x036 -> { // brightness
+            0x036 -> { // + brightness from BSI to all
                 return canInfoModel.copy(personSettingsStatus = decodeBrightness(canData, canInfoModel.personSettingsStatus))
             }
 
-            0x120 -> { //alert journal
+            0x120 -> { // + alert journal
                 return canInfoModel.copy(alerts = decodeAlertsJournal(canData))
             }
         }
@@ -131,7 +131,7 @@ class CanUtils {
             0b11 -> 45
             else -> 0
         }
-        personSettingsStatus.copy(
+        return personSettingsStatus.copy(
             adaptiveLighting = checkBit(canData.data[2], 7),
             guideMeHome = checkBit(canData.data[2], 5),
             parktronics = checkBit(canData.data[5], 6),
@@ -139,7 +139,6 @@ class CanUtils {
             automaticHandbrake = checkBit(canData.data[1], 0),
             durationGuide = durationInSeconds
         )
-        return personSettingsStatus
     }
 //    00 00 28 40 00 00 00	h	low to normal  28 = 10 1000   40 = 100 0000 +
 //    00 00 29 40 00 00 00	h	low to med     29 = 10 1001   40 = 100 0000 +
@@ -157,7 +156,7 @@ class CanUtils {
 //
 //    00 00 38 00 00 00 00		not granted   38 = 11 1000    00-           +
 
-    //    00 00 20 0C 00 00 00		high          20 = 10 0000    0C = 000 1100 +
+    //    00 00 20 0C 00 00 00		high          20 = 10 0000    0C = 000 1100 +           07 = 0000 0111   6D =  110 11**
 //    00 00 20 08 00 00 00		low           20 = 10 0000    08 = 000 1000 +
 //    00 00 20 04 00 00 00		mid           20 = 10 0000    04 = 000 0100 +
 //    00 00 20 00 00 00 00		normal        20 = 10 0000    00-           +
@@ -165,31 +164,36 @@ class CanUtils {
         val isSport = checkBit(canData.data[3], 1)
 
         if (checkBit(canData.data[2], 5)) {
-            val f28 = checkBit(canData.data[2], 5) && !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f29 = checkBit(canData.data[2], 5) && !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
-            val f2b = checkBit(canData.data[2], 5) && !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
-            val f32 = checkBit(canData.data[2], 5) && checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f30 = checkBit(canData.data[2], 5) && checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f34 = checkBit(canData.data[2], 5) && checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f38 = checkBit(canData.data[2], 5) && checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f20 = checkBit(canData.data[2], 5) && !checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-
+        //    val f28 = checkBit(canData.data[2], 5) && !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f28 = !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f29 =  !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
+            val f2b =  !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
+            val f32 =   checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f30 =  checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+      //      val f34 = checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f38 =  checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+        //    val f20 =  !checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f07 =  checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0) // для 4
+            val f31 = checkBit(canData.data[2], 0) && checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) // для 4->3
             val s40 = checkBit(canData.data[3], 6) && !checkBit(canData.data[3], 5)
             val s00 = !checkBit(canData.data[3], 6) && !checkBit(canData.data[3], 5)
             val s20 = !checkBit(canData.data[3], 6) && checkBit(canData.data[3], 5)
             val s60 = checkBit(canData.data[3], 6) && checkBit(canData.data[3], 5)
 
-            val s0c = checkBit(canData.data[3], 2) && checkBit(canData.data[3], 1)
-            val s08 = checkBit(canData.data[3], 2) && !checkBit(canData.data[3], 1)
-            val s04 = !checkBit(canData.data[3], 2) && checkBit(canData.data[3], 1)
-            val s00n = !checkBit(canData.data[3], 2) && !checkBit(canData.data[3], 1)
+            val s0c = checkBit(canData.data[3], 3) && checkBit(canData.data[3], 2)
+            val s08 = checkBit(canData.data[3], 3) && !checkBit(canData.data[3], 2)
+            val s04 = !checkBit(canData.data[3], 3) && checkBit(canData.data[3], 2)
+       //     val s00n = !checkBit(canData.data[3], 3) && !checkBit(canData.data[3], 2)
 
             val mode = when {
                 f38 -> Mode.NOT_GRANTED
-                f20 && s00n -> Mode.NORMAL
-                f20 && s04 -> Mode.MID
-                f20 && s08 -> Mode.LOW
-                f20 && s0c -> Mode.HIGH
+                f07 && s0c -> Mode.HIGH
+                //     f20 && s04 -> Mode.MID
+                //     f20 && s08 -> Mode.LOW
+                //     f20 && s0c -> Mode.HIGH
+                      s04 -> Mode.MID
+                      s08 -> Mode.LOW
+                f07 && s00 -> Mode.NORMAL
                 f28 && s40 -> Mode.LOW_TO_NORMAL
                 f29 && s40 -> Mode.LOW_TO_MED
                 f2b && s40 -> Mode.LOW_TO_HIGH
@@ -199,7 +203,7 @@ class CanUtils {
                 f32 && s00 -> Mode.NORMAL_TO_LOW
                 f30 && s20 -> Mode.MED_TO_NORMAL
                 f32 && s20 -> Mode.MED_TO_LOW
-                f34 && s60 -> Mode.HIGH_TO_MED
+                f31 && s60 -> Mode.HIGH_TO_MED
                 f30 && s60 -> Mode.HIGH_TO_NORMAL
                 f32 && s60 -> Mode.HIGH_TO_LOW
                 else -> Mode.NORMAL
@@ -231,7 +235,7 @@ class CanUtils {
         val avgSpeed = (highByte shl 8) or lowByte
 
         return TripData(
-            litersPer100km = litersPer100km, totalDistance = totalDistance, avgSpeed = avgSpeed
+            avgSpeedKmh = litersPer100km, totalDistance = totalDistance, litersPer100 = avgSpeed
         )
     }
 

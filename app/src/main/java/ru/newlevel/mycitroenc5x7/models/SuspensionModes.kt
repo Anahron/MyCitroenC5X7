@@ -18,6 +18,7 @@ enum class Mode {
     LOW(),
     MID(),
     NORMAL(),
+    NONE(),
 }
 //    00 00 28 40 00 00 00	h	 low to normal 28 = 10 1000   40 = 100 0000
 //    00 00 29 40 00 00 00	h	low to med     29 = 10 1001   40 = 100 0000

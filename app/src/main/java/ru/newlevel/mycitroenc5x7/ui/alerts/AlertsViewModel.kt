@@ -18,7 +18,6 @@ class AlertsViewModel(private val canRepo: CanRepo) : ViewModel() {
     private val _alertsState = MutableStateFlow(CanInfoModel())
     val alertsState: StateFlow<CanInfoModel> = _alertsState.asStateFlow()
 
-
     private val _canDataFlow = MutableSharedFlow<CanData>()
     val canDataFlow: SharedFlow<CanData> = _canDataFlow
 

@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                     if (it.suspensionState.isSport) binding.tvSportMode.visibility = View.VISIBLE
                     else binding.tvSportMode.visibility = View.GONE
                     when (it.suspensionState.mode) {
+                        Mode.NONE -> {}
                         Mode.NOT_GRANTED -> {
                             Toast.makeText(this@MainActivity, "Изменение высоты запрещено", Toast.LENGTH_LONG).show()
                         }
@@ -116,7 +117,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.visibility = View.VISIBLE
                             binding.speedLimitSignView.setSpeedLimit(10)
-                            //TODO send to can1 frame 0x268 speed limit on CMB
                         }
 
                         Mode.MID -> {
@@ -124,29 +124,25 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.visibility = View.VISIBLE
                             binding.speedLimitSignView.setSpeedLimit(40)
-                            //TODO send to can1 frame 0x268 speed limit on CMB
                         }
 
                         Mode.NORMAL -> {
                             setImageAndIndicators(2)
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.visibility = View.GONE
-                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
                         }
 
                         Mode.LOW -> {
-                            setImageAndIndicators(2)
+                            setImageAndIndicators(1)
                             binding.ivLevelShower.visibility = View.GONE
                             binding.speedLimitSignView.setSpeedLimit(10)
                             binding.speedLimitSignView.visibility = View.VISIBLE
-                            //TODO send to can1 frame 0x268 speed limit on CMB not hete - in service
                         }
 
                         Mode.LOW_TO_NORMAL -> {
                             binding.ivLevelShower.visibility = View.VISIBLE
                             binding.ivLevelShower.setImageResource(R.drawable.low_to_norm)
                             binding.speedLimitSignView.visibility = View.GONE
-                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
                         }
 
                         Mode.LOW_TO_MED -> {
@@ -195,7 +191,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             binding.ivLevelShower.visibility = View.VISIBLE
                             binding.ivLevelShower.setImageResource(R.drawable.med_to_norm)
                             binding.speedLimitSignView.visibility = View.GONE
-                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
                         }
 
                         Mode.MED_TO_HIGH -> {
@@ -216,7 +211,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             binding.ivLevelShower.visibility = View.VISIBLE
                             binding.ivLevelShower.setImageResource(R.drawable.high_to_norm)
                             binding.speedLimitSignView.visibility = View.GONE
-                            //TODO send to can1 frame 0x268 speed limit on CMB cancel
                         }
 
                         Mode.HIGH_TO_MED -> {

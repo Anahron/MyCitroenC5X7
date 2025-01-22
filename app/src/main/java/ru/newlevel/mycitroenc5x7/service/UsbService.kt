@@ -15,9 +15,6 @@ import android.graphics.PixelFormat
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
-import android.media.MediaMetadata
-import android.media.session.MediaController
-import android.media.session.MediaSessionManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -31,6 +28,7 @@ import com.felhr.usbserial.UsbSerialInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -52,6 +50,9 @@ class UsbService : Service(), KoinComponent {
     private var connection: UsbDeviceConnection? = null
     private val canRepo: CanRepo by inject()
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    val buffer = StringBuilder()
+    private var suspensionBuffer: Mode = Mode.NONE
+    private val channel = Channel<ByteArray>(Channel.UNLIMITED)
 
     private val localReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -97,7 +98,7 @@ class UsbService : Service(), KoinComponent {
                         45 -> 0x54
                         else -> 0xFF
                     }
-                    sendBinaryCommand(byteDuration.toByte()) //Adaptive on/off
+                    sendBinaryCommand(byteDuration.toByte())
                 }
 
                 "Adaptive" -> {
@@ -144,10 +145,29 @@ class UsbService : Service(), KoinComponent {
         serialPort?.write(message)
     }
 
+    init {
+        serviceScope.launch {
+            for (data in channel) {
+                for (byte in data) {
+                    buffer.append(byte.toInt().toChar())
+                    if (byte.toInt().toChar() == '\n') {
+                        val packet = buffer.toString().trim()
+                        if (packet.isNotEmpty()) {
+                            canRepo.processCanMessage(packet.toByteArray())
+                        }
+                        buffer.clear()
+                    }
+                }
+            }
+        }
+    }
+
     @OptIn(ExperimentalUnsignedTypes::class)
     private val mCallback = UsbSerialInterface.UsbReadCallback { data ->
         serviceScope.launch {
-            canRepo.processCanMessage(data)
+            data?.let {
+                channel.send(it)
+            }
         }
     }
 
@@ -174,38 +194,10 @@ class UsbService : Service(), KoinComponent {
             localReceiver, IntentFilter("ru.newlevel.mycitroenc5x7.service.LOCAL_BROADCAST")
         )
         setupConnection()
-       // getMedia()
-
+        // getMedia()
     }
 
-    private fun getMedia() {
-        // Получаем доступ к MediaSessionManager
-        val mediaSessionManager = getSystemService(MEDIA_SESSION_SERVICE) as MediaSessionManager
 
-        // Получаем список активных медиа-сессий
-        val activeSessions = mediaSessionManager.getActiveSessions(null)
-
-        if (activeSessions.isNotEmpty()) {
-            // Берем первую активную сессию
-            val session = activeSessions.first()
-            val controller = MediaController(this, session.sessionToken)
-            val mediaControllerCallback = object : MediaController.Callback() {
-                override fun onMetadataChanged(metadata: MediaMetadata?) {
-                    super.onMetadataChanged(metadata)
-                    // Обработка изменений метаданных (например, название трека)
-                    val trackTitle = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
-                    Log.d("Music Info", "Track title: $trackTitle")
-                }
-
-                override fun onAudioInfoChanged(playbackInfo: MediaController.PlaybackInfo) {
-                    super.onAudioInfoChanged(playbackInfo)
-                }
-            }
-            controller.registerCallback(mediaControllerCallback)
-        } else {
-            Log.e("Music Info", "No active media sessions found")
-        }
-    }
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -213,15 +205,6 @@ class UsbService : Service(), KoinComponent {
             canRepo.putLog("onStartCommand")
         }
         startForegroundService()
-        //TODO удалить тестовые вызовы
-        serviceScope.launch(Dispatchers.Main) {
-            delay(8000)
-            showOverlayMessage(R.drawable.alert_not_granted)
-            delay(8000)
-            showOverlayMessage(R.drawable.alert_normal_to_max_pos)
-            delay(8000)
-            showOverlayMessage(R.drawable.alert_max_pos)
-        }
         return START_STICKY
     }
 
@@ -253,7 +236,7 @@ class UsbService : Service(), KoinComponent {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 PixelFormat.TRANSLUCENT
             )
 
@@ -299,90 +282,97 @@ class UsbService : Service(), KoinComponent {
     private fun setupSuspensionUpdates() {
         CoroutineScope(Dispatchers.Main).launch {
             canRepo.canDataInfoFlow.collect {
-                when (it.suspensionState.mode) {
-                    Mode.NOT_GRANTED -> {
-                        showOverlayMessage(R.drawable.alert_not_granted)
-                    }
+                if (it.suspensionState.mode != suspensionBuffer) {
+                    when (it.suspensionState.mode) {
+                        Mode.NONE -> {
 
-                    Mode.HIGH -> {
-                        showOverlayMessage(R.drawable.alert_max_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        }
 
-                    Mode.MID -> {
-                        showOverlayMessage(R.drawable.alert_mid_pos)
-                        sendBinaryCommand(0x84.toByte()) // ограничение 40
-                    }
+                        Mode.NOT_GRANTED -> {
+                            showOverlayMessage(R.drawable.alert_not_granted)
+                        }
 
-                    Mode.NORMAL -> {
-                        showOverlayMessage(R.drawable.alert_normal_pos)
-                        sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
-                    }
+                        Mode.HIGH -> {
+                            showOverlayMessage(R.drawable.alert_max_pos)
+                            sendBinaryCommand(0x81.toByte()) // ограничение 10
+                        }
 
-                    Mode.LOW -> {
-                        showOverlayMessage(R.drawable.alert_low_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        Mode.MID -> {
+                            showOverlayMessage(R.drawable.alert_mid_pos)
+                            sendBinaryCommand(0x84.toByte()) // ограничение 40
+                        }
 
-                    Mode.LOW_TO_NORMAL -> {
-                        showOverlayMessage(R.drawable.alert_low_to_normal_pos)
-                        sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
-                    }
+                        Mode.NORMAL -> {
+                            showOverlayMessage(R.drawable.alert_normal_pos)
+                            sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
+                        }
 
-                    Mode.LOW_TO_MED -> {
-                        showOverlayMessage(R.drawable.alert_low_to_mid_pos)
-                        sendBinaryCommand(0x84.toByte()) // ограничение 40
-                    }
+                        Mode.LOW -> {
+                            showOverlayMessage(R.drawable.alert_low_pos)
+                            sendBinaryCommand(0x81.toByte()) // ограничение 10
+                        }
 
-                    Mode.LOW_TO_HIGH -> {
-                        showOverlayMessage(R.drawable.alert_low_to_max_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        Mode.LOW_TO_NORMAL -> {
+                            showOverlayMessage(R.drawable.alert_low_to_normal_pos)
+                            sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
+                        }
 
-                    Mode.NORMAL_TO_LOW -> {
-                        showOverlayMessage(R.drawable.alert_normal_to_low_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        Mode.LOW_TO_MED -> {
+                            showOverlayMessage(R.drawable.alert_low_to_mid_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.NORMAL_TO_MED -> {
-                        showOverlayMessage(R.drawable.alert_normal_to_mid_pos)
-                        sendBinaryCommand(0x84.toByte()) // ограничение 40
-                    }
+                        Mode.LOW_TO_HIGH -> {
+                            showOverlayMessage(R.drawable.alert_low_to_max_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.NORMAL_TO_HIGH -> {
-                        showOverlayMessage(R.drawable.alert_normal_to_max_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        Mode.NORMAL_TO_LOW -> {
+                            showOverlayMessage(R.drawable.alert_normal_to_low_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.MED_TO_LOW -> {
-                        showOverlayMessage(R.drawable.alert_mid_to_low_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        Mode.NORMAL_TO_MED -> {
+                            showOverlayMessage(R.drawable.alert_normal_to_mid_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.MED_TO_NORMAL -> {
-                        showOverlayMessage(R.drawable.alert_mid_to_normal_pos)
-                        sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
-                    }
+                        Mode.NORMAL_TO_HIGH -> {
+                            showOverlayMessage(R.drawable.alert_normal_to_max_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.MED_TO_HIGH -> {
-                        showOverlayMessage(R.drawable.alert_mid_to_max_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        Mode.MED_TO_LOW -> {
+                            showOverlayMessage(R.drawable.alert_mid_to_low_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.HIGH_TO_LOW -> {
-                        showOverlayMessage(R.drawable.alert_max_to_low_pos)
-                        sendBinaryCommand(0x81.toByte()) // ограничение 10
-                    }
+                        Mode.MED_TO_NORMAL -> {
+                            showOverlayMessage(R.drawable.alert_mid_to_normal_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.HIGH_TO_NORMAL -> {
-                        showOverlayMessage(R.drawable.alert_max_to_normal_pos)
-                        sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
-                    }
+                        Mode.MED_TO_HIGH -> {
+                            showOverlayMessage(R.drawable.alert_mid_to_max_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
 
-                    Mode.HIGH_TO_MED -> {
-                        showOverlayMessage(R.drawable.alert_max_to_mid_pos)
-                        sendBinaryCommand(0x84.toByte()) // ограничение 40
+                        Mode.HIGH_TO_LOW -> {
+                            showOverlayMessage(R.drawable.alert_max_to_low_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
+
+                        Mode.HIGH_TO_NORMAL -> {
+                            showOverlayMessage(R.drawable.alert_max_to_normal_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
+
+                        Mode.HIGH_TO_MED -> {
+                            showOverlayMessage(R.drawable.alert_max_to_mid_pos)
+                            sendBinaryCommand(0x80.toByte())
+                        }
                     }
+                    suspensionBuffer = it.suspensionState.mode
                 }
             }
         }
@@ -402,23 +392,17 @@ class UsbService : Service(), KoinComponent {
 
 
     private fun setupConnection() {
-        serviceScope.launch {
-            canRepo.putLog("setupConnection()")
-        }
         val usbDevices = usbManager.deviceList
         if (usbDevices.isNotEmpty()) {
             usbDevices.forEach { (_, usbDevice) ->
                 device = usbDevice
-                serviceScope.launch {
-                    canRepo.putLog("deviceVID = ${device?.vendorId}")
-                }
                 val deviceVID = device?.vendorId
-                if (deviceVID == 6790) { // Arduino Vendor ID
+                if (deviceVID == 1027) { // Arduino Vendor ID
                     if (usbManager.hasPermission(device)) {
                         connection = usbManager.openDevice(device)
                         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection)
                         serialPort?.let {
-                            it.setBaudRate(9600) //TODO test 38400 / 115200
+                            it.setBaudRate(9600) //TODO test 38400 / 115200 (было 9600)
                             it.setDataBits(UsbSerialInterface.DATA_BITS_8)
                             it.setStopBits(UsbSerialInterface.STOP_BITS_1)
                             it.setParity(UsbSerialInterface.PARITY_NONE)

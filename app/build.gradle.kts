@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    implementation("com.github.angelix:UsbSerial:0f16336a4e")
+    implementation(libs.usbserial)
 //    implementation (libs.arduino)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -50,8 +50,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation ("androidx.media:media:1.7.0")
 
     //DI
     implementation(libs.io.insert.koin.koin.core)

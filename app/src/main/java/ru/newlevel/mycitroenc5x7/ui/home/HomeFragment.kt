@@ -77,7 +77,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun collectTripState() {
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.state.collect {
-                binding.textDistanceLeftMoment.text = it.totalDistanceFinish
                 binding.textDistanceTraveledMoment.text = it.totalDistance
                 binding.textL100Moment.text = it.litersPer100km
                 if (homeViewModel.uiState.value == 2) {
@@ -101,16 +100,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     1 -> {
                         binding.linearTrip.visibility = View.GONE
                         binding.linearMomentTrip.visibility = View.VISIBLE
+                        binding.textDistanceTraveledMoment.text = homeViewModel.state.value.totalDistance
+                        binding.textL100Moment.text = homeViewModel.state.value.litersPer100km
                     }
 
                     2 -> {
                         binding.linearMomentTrip.visibility = View.GONE
                         binding.linearTrip.visibility = View.VISIBLE
+                        binding.textL100.text =  homeViewModel.state.value.litersPer100kmTrip1
+                        binding.textSpeed.text = homeViewModel.state.value.avgSpeedTrip1
+                        binding.textDistance.text = homeViewModel.state.value.totalDistanceTrip1
                     }
 
                     3 -> {
                         binding.linearMomentTrip.visibility = View.GONE
                         binding.linearTrip.visibility = View.VISIBLE
+                        binding.textL100.text =  homeViewModel.state.value.litersPer100kmTrip2
+                        binding.textSpeed.text = homeViewModel.state.value.avgSpeedTrip2
+                        binding.textDistance.text = homeViewModel.state.value.totalDistanceTrip2
                     }
                 }
             }

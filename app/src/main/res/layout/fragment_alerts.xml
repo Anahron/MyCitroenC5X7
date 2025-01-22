@@ -73,7 +73,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="ID"
+                android:text="@string/id"
                 android:background="@color/main_yellow"
                 android:textColor="@color/background"/>
 
@@ -83,7 +83,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DLC"
+                android:text="@string/dlc"
                 android:background="@color/semi_yellow"
                 android:textColor="@color/background"/>
 
@@ -93,7 +93,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA0"
+                android:text="@string/d_0"
                 android:background="@color/main_yellow"
                 android:textColor="@color/background"/>
             <TextView
@@ -102,7 +102,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA1"
+                android:text="@string/d_1"
                 android:background="@color/semi_yellow"
                 android:textColor="@color/background"/>
             <TextView
@@ -111,7 +111,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA2"
+                android:text="@string/d_2"
                 android:background="@color/main_yellow"
                 android:textColor="@color/background"/>
             <TextView
@@ -120,7 +120,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA3"
+                android:text="@string/d_3"
                 android:background="@color/semi_yellow"
                 android:textColor="@color/background"/>
             <TextView
@@ -129,7 +129,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA4"
+                android:text="@string/d_4"
                 android:background="@color/main_yellow"
                 android:textColor="@color/background"/>
             <TextView
@@ -138,7 +138,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA5"
+                android:text="@string/d_5"
                 android:background="@color/semi_yellow"
                 android:textColor="@color/background"/>
             <TextView
@@ -147,7 +147,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA6"
+                android:text="@string/d_6"
                 android:background="@color/main_yellow"
                 android:textColor="@color/background"/>
             <TextView
@@ -156,7 +156,7 @@
                 android:layout_height="50dp"
                 android:textSize="22sp"
                 android:padding="6dp"
-                android:text="DATA7"
+                android:text="@string/d_7"
                 android:background="@color/semi_yellow"
                 android:textColor="@color/background"/>
 
@@ -171,4 +171,14 @@
 
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="TextView"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/textAlertJournalTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

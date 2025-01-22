@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.68" />
+        app:layout_constraintGuide_percent="0.67" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -75,7 +75,7 @@
         android:layout_marginHorizontal="2dp"
         android:text="@string/_4"
         android:textColor="@color/background"
-        android:textSize="32sp"
+        android:textSize="28sp"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
@@ -88,7 +88,7 @@
         android:layout_margin="2dp"
         android:text="@string/_3"
         android:textColor="@color/background"
-        android:textSize="32sp"
+        android:textSize="28sp"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/iv_high" />
 
@@ -101,7 +101,7 @@
         android:layout_margin="2dp"
         android:text="@string/_2"
         android:textColor="@color/background"
-        android:textSize="32sp"
+        android:textSize="28sp"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/iv_mid"
         />
@@ -116,7 +116,7 @@
         android:layout_marginHorizontal="2dp"
         android:layout_marginTop="2dp"
         android:textColor="@color/background"
-        android:textSize="32sp"
+        android:textSize="28sp"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/iv_normal"
         />
@@ -125,6 +125,7 @@
         android:id="@+id/tv_sportMode"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
+        android:visibility="gone"
         android:layout_marginHorizontal="2dp"
         android:gravity="center"
         android:text="@string/sport_mode"
@@ -159,6 +160,7 @@
         android:id="@+id/iv_level_shower"
         android:layout_width="50dp"
         android:layout_height="166dp"
+        android:visibility="gone"
         android:src="@drawable/norm_to_low"
         android:contentDescription="@string/app_name"
         app:layout_constraintBottom_toBottomOf="@+id/iv_low"
@@ -168,6 +170,7 @@
     <ru.newlevel.mycitroenc5x7.ui.custiomViews.SpeedLimitSignView
         android:id="@+id/speedLimitSignView"
         android:layout_width="60dp"
+        android:visibility="gone"
         android:layout_height="60dp"
         android:layout_marginVertical="4dp"
         android:layout_centerInParent="true"
