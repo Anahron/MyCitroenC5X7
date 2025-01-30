@@ -22,7 +22,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.databinding.ActivityMainBinding
+import ru.newlevel.mycitroenc5x7.models.CanInfoModel
 import ru.newlevel.mycitroenc5x7.models.Mode
+import ru.newlevel.mycitroenc5x7.models.SuspensionState
 import ru.newlevel.mycitroenc5x7.service.UsbService
 import ru.newlevel.mycitroenc5x7.ui.MainViewModel
 
@@ -43,7 +45,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         navView.setupWithNavController(navController)
         checkOverlayPermission()
     }
-
     private fun checkOverlayPermission() {
         if (!Settings.canDrawOverlays(this)) {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
@@ -101,126 +102,130 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 Log.e(TAG, " homeViewModel.uiState.collect ")
-                mainViewModel.state.collect {
-                    if (binding.tvTempExt.text != it.externalTemp)
-                        binding.tvTempExt.text = it.externalTemp
-                    if (it.suspensionState.isSport) binding.tvSportMode.visibility = View.VISIBLE
-                    else binding.tvSportMode.visibility = View.GONE
-                    when (it.suspensionState.mode) {
-                        Mode.NONE -> {}
-                        Mode.NOT_GRANTED -> {
-                            Toast.makeText(this@MainActivity, "Изменение высоты запрещено", Toast.LENGTH_LONG).show()
-                        }
-
-                        Mode.HIGH -> {
-                            setImageAndIndicators(4)
-                            binding.ivLevelShower.visibility = View.GONE
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                        }
-
-                        Mode.MID -> {
-                            setImageAndIndicators(3)
-                            binding.ivLevelShower.visibility = View.GONE
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                            binding.speedLimitSignView.setSpeedLimit(40)
-                        }
-
-                        Mode.NORMAL -> {
-                            setImageAndIndicators(2)
-                            binding.ivLevelShower.visibility = View.GONE
-                            binding.speedLimitSignView.visibility = View.GONE
-                        }
-
-                        Mode.LOW -> {
-                            setImageAndIndicators(1)
-                            binding.ivLevelShower.visibility = View.GONE
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.LOW_TO_NORMAL -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.low_to_norm)
-                            binding.speedLimitSignView.visibility = View.GONE
-                        }
-
-                        Mode.LOW_TO_MED -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.low_to_mid)
-                            binding.speedLimitSignView.setSpeedLimit(40)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.LOW_TO_HIGH -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.low_to_high)
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.NORMAL_TO_LOW -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.norm_to_low)
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.NORMAL_TO_MED -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.norm_to_mid)
-                            binding.speedLimitSignView.setSpeedLimit(40)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.NORMAL_TO_HIGH -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.norm_to_high)
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.MED_TO_LOW -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.med_to_low)
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.MED_TO_NORMAL -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.med_to_norm)
-                            binding.speedLimitSignView.visibility = View.GONE
-                        }
-
-                        Mode.MED_TO_HIGH -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.med_to_high)
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.HIGH_TO_LOW -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.high_to_low)
-                            binding.speedLimitSignView.setSpeedLimit(10)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-
-                        Mode.HIGH_TO_NORMAL -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.high_to_norm)
-                            binding.speedLimitSignView.visibility = View.GONE
-                        }
-
-                        Mode.HIGH_TO_MED -> {
-                            binding.ivLevelShower.visibility = View.VISIBLE
-                            binding.ivLevelShower.setImageResource(R.drawable.high_to_med)
-                            binding.speedLimitSignView.setSpeedLimit(40)
-                            binding.speedLimitSignView.visibility = View.VISIBLE
-                        }
-                    }
+                mainViewModel.state.collect { state ->
+                    setUi(state)
                 }
+            }
+        }
+    }
+
+    private fun setUi(state: CanInfoModel) {
+        if (binding.tvTempExt.text != state.externalTemp)
+            binding.tvTempExt.text = state.externalTemp
+        if (state.suspensionState.isSport) binding.tvSportMode.visibility = View.VISIBLE
+        else binding.tvSportMode.visibility = View.GONE
+        when (state.suspensionState.mode) {
+            Mode.NONE -> {}
+            Mode.NOT_GRANTED -> {
+                Toast.makeText(this@MainActivity, "Изменение высоты запрещено", Toast.LENGTH_LONG).show()
+            }
+
+            Mode.HIGH -> {
+                setImageAndIndicators(4)
+                binding.ivLevelShower.visibility = View.GONE
+                binding.speedLimitSignView.visibility = View.VISIBLE
+                binding.speedLimitSignView.setSpeedLimit(10)
+            }
+
+            Mode.MID -> {
+                setImageAndIndicators(3)
+                binding.ivLevelShower.visibility = View.GONE
+                binding.speedLimitSignView.visibility = View.VISIBLE
+                binding.speedLimitSignView.setSpeedLimit(40)
+            }
+
+            Mode.NORMAL -> {
+                setImageAndIndicators(2)
+                binding.ivLevelShower.visibility = View.GONE
+                binding.speedLimitSignView.visibility = View.GONE
+            }
+
+            Mode.LOW -> {
+                setImageAndIndicators(1)
+                binding.ivLevelShower.visibility = View.GONE
+                binding.speedLimitSignView.setSpeedLimit(10)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.LOW_TO_NORMAL -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.low_to_norm)
+                binding.speedLimitSignView.visibility = View.GONE
+            }
+
+            Mode.LOW_TO_MED -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.low_to_mid)
+                binding.speedLimitSignView.setSpeedLimit(40)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.LOW_TO_HIGH -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.low_to_high)
+                binding.speedLimitSignView.setSpeedLimit(10)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.NORMAL_TO_LOW -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.norm_to_low)
+                binding.speedLimitSignView.setSpeedLimit(10)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.NORMAL_TO_MED -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.norm_to_mid)
+                binding.speedLimitSignView.setSpeedLimit(40)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.NORMAL_TO_HIGH -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.norm_to_high)
+                binding.speedLimitSignView.setSpeedLimit(10)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.MED_TO_LOW -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.med_to_low)
+                binding.speedLimitSignView.setSpeedLimit(10)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.MED_TO_NORMAL -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.med_to_norm)
+                binding.speedLimitSignView.visibility = View.GONE
+            }
+
+            Mode.MED_TO_HIGH -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.med_to_high)
+                binding.speedLimitSignView.setSpeedLimit(10)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.HIGH_TO_LOW -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.high_to_low)
+                binding.speedLimitSignView.setSpeedLimit(10)
+                binding.speedLimitSignView.visibility = View.VISIBLE
+            }
+
+            Mode.HIGH_TO_NORMAL -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.high_to_norm)
+                binding.speedLimitSignView.visibility = View.GONE
+            }
+
+            Mode.HIGH_TO_MED -> {
+                binding.ivLevelShower.visibility = View.VISIBLE
+                binding.ivLevelShower.setImageResource(R.drawable.high_to_med)
+                binding.speedLimitSignView.setSpeedLimit(40)
+                binding.speedLimitSignView.visibility = View.VISIBLE
             }
         }
     }

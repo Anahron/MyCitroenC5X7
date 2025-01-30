@@ -13,18 +13,28 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.08" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.9" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineRight2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.72" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineRight"
         android:layout_width="wrap_content"
@@ -50,6 +60,7 @@
         android:textAllCaps="false"
         android:textColor="@color/background"
         android:textSize="26sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.844"
@@ -71,7 +82,7 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
         app:checkedButton="@id/button_1"
         app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
@@ -114,23 +125,20 @@
 
     <LinearLayout
         android:id="@+id/linear_moment_trip"
-        android:layout_width="wrap_content"
+        android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:layout_marginVertical="64dp"
+        android:layout_marginVertical="34dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="@+id/button_reset"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight2"
         app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
-
-
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="horizontal">
-
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -162,19 +170,12 @@
 
             <TextView
                 android:id="@+id/text_distance_traveled_moment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="24dp"
-                android:fontFamily="sans-serif"
-                android:gravity="end"
-                android:text="@string/_0"
-                android:textColor="@color/main_yellow"
-                android:textSize="30sp" />
+                style="@style/TextItemsStyle"
+                android:text="@string/_0" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="horizontal">
 
@@ -187,28 +188,21 @@
 
             <TextView
                 android:id="@+id/text_l100_moment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="24dp"
-                android:gravity="end"
-                android:text="5.4 л/100"
-                android:textColor="@color/main_yellow"
-                android:textSize="30sp" />
+                style="@style/TextItemsStyle"
+                android:text="@string/_0_0_100" />
         </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linear_trip"
-        android:layout_width="wrap_content"
+        android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="64dp"
+        android:layout_marginVertical="34dp"
         android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.728"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight2"
+        app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
 
 
@@ -234,14 +228,9 @@
 
             <TextView
                 android:id="@+id/text_distance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="24dp"
-                android:gravity="end"
-                android:text="9999 км"
-                android:textColor="@color/main_yellow"
-                android:textSize="30sp" />
+                style="@style/TextItemsStyle"
+                android:text="@string/_0"
+              />
         </LinearLayout>
 
         <LinearLayout
@@ -271,19 +260,12 @@
 
             <TextView
                 android:id="@+id/text_speed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="24dp"
-                android:fontFamily="sans-serif"
-                android:gravity="end"
-                android:text="32 км/ч"
-                android:textColor="@color/main_yellow"
-                android:textSize="30sp" />
+                style="@style/TextItemsStyle"
+                android:text="@string/_0kmh" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="horizontal">
 
@@ -296,14 +278,29 @@
 
             <TextView
                 android:id="@+id/text_l100"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="24dp"
-                android:gravity="end"
-                android:text="7.4 л/100"
-                android:textColor="@color/main_yellow"
-                android:textSize="30sp" />
+                style="@style/TextItemsStyle"
+                android:text="@string/_0_0_100"
+                tools:text="14.4 л/100"
+             />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/vector_engine_time" />
+
+            <TextView
+                android:id="@+id/text_time1"
+                style="@style/TextItemsStyle"
+                android:text="@string/_7_4"
+                />
         </LinearLayout>
 
     </LinearLayout>

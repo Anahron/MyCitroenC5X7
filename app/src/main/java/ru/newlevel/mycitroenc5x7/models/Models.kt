@@ -6,7 +6,9 @@ data class MomentTripData(val totalDistanceFinish: Int = 0, val totalDistance: I
 
 data class PersonSettingsStatus(val adaptiveLighting: Boolean = false, val guideMeHome: Boolean = false,
     val durationGuide: Int = 0, val parktronics: Boolean = false, val driverWelcome: Boolean = false,
-    val automaticHandbrake: Boolean = false, val cmbBrightness: Int = 0, val isDay: Boolean = true)
+    val automaticHandbrake: Boolean = false, val cmbBrightness: Int = 0, val isDay: Boolean = true, val espStatus: Boolean = false
+, val colorNormal:CmbColor = CmbColor.COLOR_YELLOW, val colorSport:CmbColor = CmbColor.COLOR_YELLOW,
+                                val cmbThemeLeft: Int = 0, val cmbThemeRight: Int = 0)
 
 data class Alert(
     val message: String,
@@ -16,4 +18,9 @@ enum class Importance {
     INFORMATION,
     WARNING,
     STOP
+}
+enum class CmbColor {
+    COLOR_YELLOW,
+    COLOR_RED,
+    COLOR_BLUE
 }

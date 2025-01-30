@@ -12,6 +12,8 @@
     <color name="semi_yellow">#E7E3B6</color>
     <color name="white">#FFFFFF</color>
     <color name="red">#FF2626</color>
+    <color name="red_theme">#E94242</color>
+    <color name="blue">#3985FB</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="semi_transparent">#B4212121</color>
     <color name="main_yellow">#D3A042</color>

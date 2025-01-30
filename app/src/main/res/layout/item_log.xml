@@ -88,6 +88,15 @@
         android:padding="6dp"
         android:background="@color/semi_yellow"
         android:textColor="@color/background"/>
-
+    <TextView
+        android:id="@+id/tv_ban"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:textSize="22sp"
+        android:padding="6dp"
+        android:gravity="center"
+        android:text="@string/ban"
+        android:background="@color/white"
+        android:textColor="@color/background"/>
 
 </LinearLayout>

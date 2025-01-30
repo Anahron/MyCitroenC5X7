@@ -35,7 +35,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val buttonNo = dialogView.findViewById<Button>(R.id.buttonNo)
 
             val dialog = dialogBuilder.create()
-            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            dialog.window?.setBackgroundDrawableResource(R.color.transparent)
 
             buttonYes.setOnClickListener {
                 sendResetTrip(homeViewModel.uiState.value)
@@ -83,10 +83,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     binding.textL100.text = it.litersPer100kmTrip1
                     binding.textSpeed.text = it.avgSpeedTrip1
                     binding.textDistance.text = it.totalDistanceTrip1
-                } else if (homeViewModel.uiState.value == 3) {
+                    binding.textTime1.text = it.engineTime1
+                } else {
                     binding.textL100.text = it.litersPer100kmTrip2
                     binding.textSpeed.text = it.avgSpeedTrip2
                     binding.textDistance.text = it.totalDistanceTrip2
+                    binding.textTime1.text = it.engineTime2
                 }
             }
         }
@@ -102,14 +104,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         binding.linearMomentTrip.visibility = View.VISIBLE
                         binding.textDistanceTraveledMoment.text = homeViewModel.state.value.totalDistance
                         binding.textL100Moment.text = homeViewModel.state.value.litersPer100km
+                        binding.buttonReset.visibility = View.GONE
                     }
 
                     2 -> {
                         binding.linearMomentTrip.visibility = View.GONE
                         binding.linearTrip.visibility = View.VISIBLE
+                        binding.textTime1.text = homeViewModel.state.value.engineTime1
                         binding.textL100.text =  homeViewModel.state.value.litersPer100kmTrip1
                         binding.textSpeed.text = homeViewModel.state.value.avgSpeedTrip1
                         binding.textDistance.text = homeViewModel.state.value.totalDistanceTrip1
+                        binding.buttonReset.visibility = View.VISIBLE
                     }
 
                     3 -> {
@@ -117,7 +122,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         binding.linearTrip.visibility = View.VISIBLE
                         binding.textL100.text =  homeViewModel.state.value.litersPer100kmTrip2
                         binding.textSpeed.text = homeViewModel.state.value.avgSpeedTrip2
+                        binding.textTime1.text = homeViewModel.state.value.engineTime2
                         binding.textDistance.text = homeViewModel.state.value.totalDistanceTrip2
+                        binding.buttonReset.visibility = View.VISIBLE
                     }
                 }
             }

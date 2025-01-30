@@ -27,7 +27,7 @@
     <string name="alerts_journal">Журнал ошибок</string>
     <string name="lightings">Освещение</string>
     <string name="comfort">Комфорт</string>
-    <string name="cmb">Приборная панель</string>
+    <string name="cmb">Цвета панели приборов</string>
     <string name="can_monitor">CAN монитор</string>
     <string name="duration_in_sec">Длительность, сек</string>
     <string name="_0">0 км</string>
@@ -41,4 +41,20 @@
     <string name="d_6">D[6]</string>
     <string name="d_5">D[5]</string>
     <string name="d_4">D[4]</string>
+    <string name="esp">Курсовая устойчивость (ESP)</string>
+    <string name="sport_theme">Спортивная тема</string>
+    <string name="standatr_theme">Стандартная тема</string>
+    <string name="_0_0_100">0.0 л/100</string>
+    <string name="_7_4">7.4 м/ч</string>
+    <string name="_0kmh">0 км/ч</string>
+    <string name="ban">Ban</string>
+    <string name="window_config">Настройка окон</string>
+    <string name="tahometr">Тахометр</string>
+    <string name="music">Музыка</string>
+    <string name="navigation">Навигация</string>
+    <string name="temperature">Температура</string>
+    <string name="trip">Расход</string>
+    <string name="nothing">Ничего</string>
+    <string name="right">Правое</string>
+    <string name="left">Левое</string>
 </resources>

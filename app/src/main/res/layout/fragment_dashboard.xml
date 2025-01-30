@@ -34,7 +34,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.42" />
-
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineRight2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.90" />
     <TextView
         android:id="@+id/text_trip_computer"
         android:layout_width="wrap_content"
@@ -51,7 +56,7 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
         app:checkedButton="@id/button_1"
         app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
@@ -90,6 +95,15 @@
             android:textAllCaps="false"
             android:textColor="@color/text_color_toggle"
             android:textSize="26sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_4"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/btn_color_toggle"
+            android:text="@string/window_config"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_toggle"
+            android:textSize="26sp" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <LinearLayout
@@ -97,7 +111,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
-        android:layout_marginVertical="64dp"
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="@+id/guidelineRight"
@@ -213,7 +226,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
-        android:layout_marginVertical="64dp"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.618"
@@ -224,13 +236,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="start"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="50dp"
             android:gravity="start"
             android:text="@string/cmb_brightness"
             android:textColor="@color/main_yellow"
-            android:textSize="30sp" />
+            android:textSize="28sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -242,7 +254,7 @@
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:layout_marginVertical="16dp"
+
                 android:layout_weight="1"
                 android:max="15"
                 android:progress="8"
@@ -251,14 +263,97 @@
 
             <ImageView
                 android:id="@+id/iv_day_night"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/vector_moon" />
         </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="50dp"
+            android:gravity="start"
+            android:text="@string/standatr_theme"
+            android:textColor="@color/main_yellow"
+            android:textSize="28sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="20dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+          <ImageButton
+              android:id="@+id/ib_theme_yellow"
+              android:layout_width="0dp"
+              android:background="@color/main_yellow"
+              android:layout_weight="1"
+              android:layout_height="40dp"
+              android:contentDescription="@string/app_name">
+          </ImageButton>
+            <ImageButton
+                android:id="@+id/ib_theme_red"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@color/red_theme"
+                android:layout_height="40dp"
+                android:contentDescription="@string/app_name">
+            </ImageButton>
+            <ImageButton
+                android:id="@+id/ib_theme_blue"
+                android:layout_width="0dp"
+                android:background="@color/blue"
+                android:layout_height="40dp"
+                android:contentDescription="@string/app_name"
+                android:layout_weight="1">
+            </ImageButton>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="50dp"
+            android:gravity="start"
+            android:text="@string/sport_theme"
+            android:textColor="@color/main_yellow"
+            android:textSize="28sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/ib_sport_theme_yellow"
+                android:layout_width="0dp"
+                android:background="@color/main_yellow"
+                android:layout_weight="1"
+                android:contentDescription="@string/app_name"
+                android:layout_height="40dp">
+            </ImageButton>
+            <ImageButton
+                android:id="@+id/ib_sport_theme_red"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@color/red_theme"
+                android:contentDescription="@string/app_name"
+                android:layout_height="40dp">
+            </ImageButton>
+            <ImageButton
+                android:id="@+id/ib_sport_theme_blue"
+                android:layout_width="0dp"
+                android:background="@color/blue"
+                android:layout_height="40dp"
+                android:contentDescription="@string/app_name"
+                android:layout_weight="1">
+            </ImageButton>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -266,7 +361,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
-        android:layout_marginVertical="64dp"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.618"
@@ -365,8 +459,303 @@
                 android:textColor="@color/main_yellow"
                 android:textSize="30sp" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_esp"
+                style="@style/CustomSwitchStyle"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
+
+            <TextView
+                android:id="@+id/text_esp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="24dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/esp"
+                android:textColor="@color/main_yellow"
+                android:textSize="30sp" />
+        </LinearLayout>
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/linearWindows"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="38dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/guidelineRight2"
+        app:layout_constraintHorizontal_bias="0.618"
+        app:layout_constraintStart_toStartOf="@+id/guidelineRight"
+        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                style="@style/TextItemsStyleCMB"
+                android:layout_width="match_parent"
+                android:gravity="start"
+                android:textColor="@color/white"
+                android:text="@string/left" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tachometer" />
+
+                <TextView
+                    android:id="@+id/tv_tahometr_left"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/tahometr" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_music" />
+
+                <TextView
+                    android:id="@+id/tv_music_left"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/music" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_navigation" />
+
+                <TextView
+                    android:id="@+id/tv_navi_left"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/navigation" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_temperature" />
+
+                <TextView
+                    android:id="@+id/tv_temperature_left"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/temperature" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_gas_tank" />
+
+                <TextView
+                    android:id="@+id/tv_trip_left"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/trip" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_nothing" />
+
+                <TextView
+                    android:id="@+id/tv_nothing_left"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/nothing" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                style="@style/TextItemsStyleCMB"
+                android:layout_width="match_parent"
+                android:gravity="end"
+                android:textColor="@color/white"
+                android:text="@string/right" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_tahometr_right"
+                    style="@style/TextItemsStyleCMB"
+                    android:gravity="start"
+                    android:text="@string/tahometr" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tachometer" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tv_music_right"
+                    android:gravity="start"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/music" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_music" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_navi_right"
+                    android:gravity="start"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/navigation" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_navigation" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_temperature_right"
+                    style="@style/TextItemsStyleCMB"
+                    android:gravity="start"
+                    android:text="@string/temperature" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_temperature" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_trip_right"
+                    android:gravity="start"
+                    style="@style/TextItemsStyleCMB"
+                    android:text="@string/trip" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_gas_tank" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_nothing_right"
+                    style="@style/TextItemsStyleCMB"
+                    android:gravity="start"
+                    android:text="@string/nothing" />
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/vector_nothing" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

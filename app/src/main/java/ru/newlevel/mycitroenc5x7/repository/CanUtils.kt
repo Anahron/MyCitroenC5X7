@@ -1,7 +1,10 @@
 package ru.newlevel.mycitroenc5x7.repository
 
+import android.util.Log
+import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.models.Alert
 import ru.newlevel.mycitroenc5x7.models.CanInfoModel
+import ru.newlevel.mycitroenc5x7.models.CmbColor
 import ru.newlevel.mycitroenc5x7.models.Importance
 import ru.newlevel.mycitroenc5x7.models.Mode
 import ru.newlevel.mycitroenc5x7.models.MomentTripData
@@ -11,7 +14,23 @@ import ru.newlevel.mycitroenc5x7.models.TripData
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class CanUtils {
+    init {
+    //TODO test
+        // 328      4 03 10 00 00       тож выводится
+        // 328      8 10 08 00 01 24 12 4D 43
+        // 328      4 03 10 00 00
+        // 328 8 07 28 01 00 02 FF FE 20 это было последним перед сообщением с текстом
+    val text = "Получилось, епта"
+    val packets = encodeTextForCAN(text)
+        val canId = 0x328;
+        var canDlc: Byte = 0x00;
+    // Выводим пакеты в читаемом виде
+    packets.forEachIndexed { index, packet ->
+        canDlc = packet.size.toByte()
+        Log.e(TAG, ("canId = " + canId.toString(16) + " can dlc = " + canDlc + "data ${index + 1}: " + packet.joinToString(" ") { String.format("%02X", it) }))
+    }
 
+    }
     fun checkCanId(canData: CanData, canInfoModel: CanInfoModel): CanInfoModel {
         when (canData.canId) {
             0x2A1 -> { // + trip1
@@ -45,8 +64,53 @@ class CanUtils {
             0x120 -> { // + alert journal
                 return canInfoModel.copy(alerts = decodeAlertsJournal(canData))
             }
+
+            0x227  -> { //  esp
+                return canInfoModel.copy(personSettingsStatus = decodeCMBforESPStatus(canData, canInfoModel.personSettingsStatus))
+            }
         }
         return canInfoModel
+    }
+
+    //byte colorNormal = 0x00; 00 - желтый, 40 - красный, 80 синий
+    //byte colorSport = 0x00; 00 - желтый, 40 - красный, 80 синий
+    //byte themeLeft = 0x01;
+    //byte themeRight = 0x02;
+    private fun decodeCMBforESPStatus(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
+        return personSettingsStatus.copy(
+            espStatus = !checkBit(canData.data[0],4), // esp
+            parktronics = !checkBit(canData.data[0],6),
+            colorSport = when(canData.data[4].toInt()) {
+                0x00 -> CmbColor.COLOR_YELLOW
+                0x40 -> CmbColor.COLOR_RED
+                0x80 -> CmbColor.COLOR_BLUE
+                else -> {CmbColor.COLOR_YELLOW}
+            },
+            colorNormal = when(canData.data[3].toInt()) {
+                0x00 -> CmbColor.COLOR_YELLOW
+                0x40 -> CmbColor.COLOR_RED
+                0x80 -> CmbColor.COLOR_BLUE
+                else -> {CmbColor.COLOR_YELLOW}
+            },
+            cmbThemeLeft = when(canData.data[1].toInt()) {
+                0x16 -> 1
+                0x0C -> 2
+                0x17 -> 3
+                0xA9 -> 4
+                0x14 -> 5
+                0x05 -> 6
+                else -> {0}
+            },
+            cmbThemeRight = when(canData.data[2].toInt()) {
+                0x5A -> 1
+                0x30 -> 2
+                0x17 -> 3
+                0x29 -> 4
+                0x50 -> 5
+                0x11 -> 6
+                else -> {0}
+            },
+        )
     }
 
     private fun decodeAlertsJournal(canData: CanData): List<Alert> {
@@ -108,7 +172,9 @@ class CanUtils {
 
     // data[3] brightness  0010 1110 5 бит с конца 0 - день 1 - ночь, 4 бит dark mode, первые 0-3 - яркость - 0-15 "20" > "2F"
     private fun decodeBrightness(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
-        val isDay = !checkBit(canData.data[3], 5)
+        //   val isDay = !checkBit(canData.data[3], 5)
+        val isDay = canData.data[3].toInt() < 32
+
         val cmbBrightness = canData.data[3].toInt() and 0x0F
         return personSettingsStatus.copy(isDay = isDay, cmbBrightness = cmbBrightness)
     }
@@ -122,6 +188,7 @@ class CanUtils {
     //  bitRead(canMsgRcv.data[1], 0)); // Automatic parking brake
     //canMsgSnd.data[3], 7, 1); // DSG Reset ?????
 
+
     private fun decodePersonSettingsStatus(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
         val durationBits = ((canData.data[2].toInt() shr 0) and 0b11) // Маска 0b11 захватывает только 2 бита
         val durationInSeconds = when (durationBits) {
@@ -134,12 +201,59 @@ class CanUtils {
         return personSettingsStatus.copy(
             adaptiveLighting = checkBit(canData.data[2], 7),
             guideMeHome = checkBit(canData.data[2], 5),
-            parktronics = checkBit(canData.data[5], 6),
+         //   parktronics = !checkBit(canData.data[5], 6),
             driverWelcome = checkBit(canData.data[1], 1),
             automaticHandbrake = checkBit(canData.data[1], 0),
             durationGuide = durationInSeconds
         )
     }
+
+    fun encodeTextForCAN(inputText: String): List<ByteArray> {
+        val utf8Bytes = inputText.toByteArray(Charsets.UTF_8)
+        val totalLength = utf8Bytes.size + 6 // длина текста + 6 служебных байт
+        val packets = mutableListOf<ByteArray>()
+
+        // First Frame
+        val firstPacket = ByteArray(8)
+        firstPacket[0] = 0x10.toByte()
+        firstPacket[1] = totalLength.toByte() // Длина сообщения
+        firstPacket[2] = 0x28.toByte() // Служебный байт для блютуса
+        firstPacket[3] = 0x01.toByte()
+        firstPacket[4] = 0x00.toByte()
+        firstPacket[5] = 0x02.toByte() // counter
+        firstPacket[6] = 0xFF.toByte()
+        firstPacket[7] = 0xFE.toByte()
+
+//        firstPacket[2] = 0x26.toByte() // Служебный байт для usb трек 1/1
+//       firstPacket[3] = 0x01.toByte()
+//        firstPacket[4] = 0x00.toByte()
+//       firstPacket[5] = 0x01.toByte()
+//       firstPacket[6] = 0x00.toByte()
+//       firstPacket[7] = 0x01.toByte()
+
+    //    utf8Bytes.copyInto(firstPacket, 3, 0, minOf(utf8Bytes.size, 5)) // Первые 5 байтов данных
+        packets.add(firstPacket)
+
+        // Формируем последующие пакеты (Consecutive Frames)
+     //   var byteIndex = 5
+        var byteIndex = 0
+        var frameId = 0x21.toByte() // Первый номер следующего пакета
+        while (byteIndex < utf8Bytes.size) {
+            val remainingBytes = utf8Bytes.size - byteIndex
+            val nextPacketSize = minOf(remainingBytes + 1, 8) // Учитываем размер пакета (с учётом служебных байтов)
+
+            val nextPacket = ByteArray(nextPacketSize)
+            nextPacket[0] = frameId // Указатель пакета
+            val bytesToCopy = nextPacketSize - 1 // Оставшиеся байты для данных
+            utf8Bytes.copyInto(nextPacket, 1, byteIndex, byteIndex + bytesToCopy ) // Копируем данные
+            packets.add(nextPacket)
+
+            byteIndex += bytesToCopy
+            frameId = (frameId + 1).toByte() // Следующий номер пакета
+        }
+        return packets
+    }
+
 //    00 00 28 40 00 00 00	h	low to normal  28 = 10 1000   40 = 100 0000 +
 //    00 00 29 40 00 00 00	h	low to med     29 = 10 1001   40 = 100 0000 +
 //    00 00 2B 40 00 00 00	h	low to high    2b = 10 1011   40 = 100 0000 +
@@ -164,16 +278,16 @@ class CanUtils {
         val isSport = checkBit(canData.data[3], 1)
 
         if (checkBit(canData.data[2], 5)) {
-        //    val f28 = checkBit(canData.data[2], 5) && !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            //    val f28 = checkBit(canData.data[2], 5) && !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
             val f28 = !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f29 =  !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
-            val f2b =  !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
-            val f32 =   checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f30 =  checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-      //      val f34 = checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f38 =  checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-        //    val f20 =  !checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
-            val f07 =  checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0) // для 4
+            val f29 = !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
+            val f2b = !checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0)
+            val f32 = checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f30 = checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            //      val f34 = checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f38 = checkBit(canData.data[2], 4) && checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            //    val f20 =  !checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) && !checkBit(canData.data[2], 0)
+            val f07 = checkBit(canData.data[2], 2) && checkBit(canData.data[2], 1) && checkBit(canData.data[2], 0) // для 4
             val f31 = checkBit(canData.data[2], 0) && checkBit(canData.data[2], 4) && !checkBit(canData.data[2], 3) && !checkBit(canData.data[2], 2) && !checkBit(canData.data[2], 1) // для 4->3
             val s40 = checkBit(canData.data[3], 6) && !checkBit(canData.data[3], 5)
             val s00 = !checkBit(canData.data[3], 6) && !checkBit(canData.data[3], 5)
@@ -183,7 +297,7 @@ class CanUtils {
             val s0c = checkBit(canData.data[3], 3) && checkBit(canData.data[3], 2)
             val s08 = checkBit(canData.data[3], 3) && !checkBit(canData.data[3], 2)
             val s04 = !checkBit(canData.data[3], 3) && checkBit(canData.data[3], 2)
-       //     val s00n = !checkBit(canData.data[3], 3) && !checkBit(canData.data[3], 2)
+            //     val s00n = !checkBit(canData.data[3], 3) && !checkBit(canData.data[3], 2)
 
             val mode = when {
                 f38 -> Mode.NOT_GRANTED
@@ -191,8 +305,8 @@ class CanUtils {
                 //     f20 && s04 -> Mode.MID
                 //     f20 && s08 -> Mode.LOW
                 //     f20 && s0c -> Mode.HIGH
-                      s04 -> Mode.MID
-                      s08 -> Mode.LOW
+                s04 -> Mode.MID
+                s08 -> Mode.LOW
                 f07 && s00 -> Mode.NORMAL
                 f28 && s40 -> Mode.LOW_TO_NORMAL
                 f29 && s40 -> Mode.LOW_TO_MED
@@ -240,7 +354,7 @@ class CanUtils {
     }
 
     fun calculateTemperature(canData: CanData): Int {
-        val byteValue = canData.data[5].toInt()
+        val byteValue = canData.data[0].toInt()
         val temperature = (byteValue shr 1) - 40 // Расчет температуры
         return temperature
     }

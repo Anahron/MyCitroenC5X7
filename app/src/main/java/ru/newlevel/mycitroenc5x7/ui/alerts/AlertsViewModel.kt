@@ -21,9 +21,21 @@ class AlertsViewModel(private val canRepo: CanRepo) : ViewModel() {
     private val _canDataFlow = MutableSharedFlow<CanData>()
     val canDataFlow: SharedFlow<CanData> = _canDataFlow
 
+    private val _logFlow = MutableSharedFlow<String>()
+    val  logFlow: SharedFlow<String> = _logFlow
+
     init {
         setupAlertsStateUpdate()
+        setupCanFlowUpdate()
         setupLogUpdate()
+    }
+
+    private fun setupLogUpdate() {
+        viewModelScope.launch {
+                canRepo.logger.collect { entity ->
+                    _logFlow.emit(entity)
+                }
+            }
     }
 
     private fun setupAlertsStateUpdate() {
@@ -33,11 +45,12 @@ class AlertsViewModel(private val canRepo: CanRepo) : ViewModel() {
             }
         }
     }
-    private fun setupLogUpdate() {
+    private fun setupCanFlowUpdate() {
         viewModelScope.launch {
             canRepo.canDataFlow.collect { entity ->
                 _canDataFlow.emit(entity)
             }
         }
     }
+
 }
