@@ -112,7 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
 
@@ -227,7 +227,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintHorizontal_bias="0.618"
         app:layout_constraintStart_toStartOf="@+id/guidelineRight"
         app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
@@ -353,6 +353,42 @@
                 android:contentDescription="@string/app_name"
                 android:layout_weight="1">
             </ImageButton>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="50dp"
+            android:gravity="start"
+            android:text="Тема"
+            android:textColor="@color/main_yellow"
+            android:textSize="28sp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_theme_normal"
+                android:layout_width="wrap_content"
+                style="@style/TextItemsStyleCMB"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:text="Normal"
+                android:src="@drawable/vector_nothing" />
+
+            <TextView
+                android:id="@+id/tv_theme_perfomance"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                style="@style/TextItemsStyleCMB"
+                android:layout_gravity="center"
+                android:text="Perfomance"
+                android:src="@drawable/vector_nothing" />
         </LinearLayout>
     </LinearLayout>
 
@@ -495,13 +531,14 @@
         android:id="@+id/linearWindows"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="38dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginStart="48dp"
         android:orientation="horizontal"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/guidelineRight2"
         app:layout_constraintHorizontal_bias="0.618"
         app:layout_constraintStart_toStartOf="@+id/guidelineRight"
-        app:layout_constraintTop_toBottomOf="@+id/text_trip_computer">
+        app:layout_constraintTop_toTopOf="@+id/guideline">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -509,12 +546,13 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 style="@style/TextItemsStyleCMB"
                 android:layout_width="match_parent"
-                android:gravity="start"
-                android:textColor="@color/white"
-                android:text="@string/left" />
+                android:gravity="center"
+                android:text="@string/left"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -626,12 +664,13 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 style="@style/TextItemsStyleCMB"
                 android:layout_width="match_parent"
-                android:gravity="end"
-                android:textColor="@color/white"
-                android:text="@string/right" />
+                android:gravity="center"
+                android:text="@string/right"
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -643,6 +682,7 @@
                     style="@style/TextItemsStyleCMB"
                     android:gravity="start"
                     android:text="@string/tahometr" />
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -654,11 +694,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_music_right"
-                    android:gravity="start"
                     style="@style/TextItemsStyleCMB"
+                    android:gravity="start"
                     android:text="@string/music" />
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -675,9 +717,10 @@
 
                 <TextView
                     android:id="@+id/tv_navi_right"
-                    android:gravity="start"
                     style="@style/TextItemsStyleCMB"
+                    android:gravity="start"
                     android:text="@string/navigation" />
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -711,9 +754,10 @@
 
                 <TextView
                     android:id="@+id/tv_trip_right"
-                    android:gravity="start"
                     style="@style/TextItemsStyleCMB"
+                    android:gravity="start"
                     android:text="@string/trip" />
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -732,26 +776,12 @@
                     style="@style/TextItemsStyleCMB"
                     android:gravity="start"
                     android:text="@string/nothing" />
+
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center"
                     android:src="@drawable/vector_nothing" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
 
             </LinearLayout>
         </LinearLayout>

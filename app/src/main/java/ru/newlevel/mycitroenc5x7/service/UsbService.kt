@@ -21,7 +21,6 @@ import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.felhr.usbserial.UsbSerialDevice
@@ -54,7 +53,6 @@ class UsbService : Service(), KoinComponent {
     val buffer = StringBuilder()
     private var suspensionBuffer: Mode = Mode.NONE
     private val channel = Channel<ByteArray>(Channel.UNLIMITED)
-    private val delayMicros = 13_000 // 12 мс в микросекундах
 
     private val localReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -66,27 +64,31 @@ class UsbService : Service(), KoinComponent {
                     val isDay = intent.getBooleanExtra("isDay", true)
                     Log.e(TAG, "Level: $level")
                     Log.e(TAG, "IsDay: $isDay")
-                    sendBinaryCommand(level.toByte())
+                    sendBinaryCommand(0x80.toByte(), level.toByte())
                 }
                 "ResetTrip1" -> {
                     val reset = intent.getBooleanExtra("reset", false)
-                    if (reset) sendBinaryCommand(0x71)
+                    if (reset) sendBinaryCommand(0x80.toByte(), 0x71)
                 }
 
                 "ResetTrip2" -> {
                     val reset = intent.getBooleanExtra("reset", false)
-                    if (reset) sendBinaryCommand(0x72)
+                    if (reset) sendBinaryCommand(0x80.toByte(),0x72)
+                }
+                "ThemePerformance" -> {
+                    val isOn = intent.getBooleanExtra("isOn", true)
+                    sendBinaryCommand(0x80.toByte(),if (isOn) 0x96.toByte() else 0x97.toByte())
                 }
 
                 "Parktronics" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "Parktronics: $isOn")
-                    sendBinaryCommand(if (isOn) 0x61 else 0x62) //парктроник on/off
+                    sendBinaryCommand(0x80.toByte(),if (isOn) 0x61 else 0x62) //парктроник on/off
                 }
                 "Esp" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "Esp: $isOn")
-                    sendBinaryCommand(if (isOn) 0x63 else 0x64) //парктроник on/off
+                    sendBinaryCommand(0x80.toByte(),if (isOn) 0x63 else 0x64) //парктроник on/off
                 }
                 "GuideMeToHomeDuration" -> {
                     val duration = intent.getIntExtra("Duration", 15)
@@ -98,58 +100,58 @@ class UsbService : Service(), KoinComponent {
                         45 -> 0x54
                         else -> 0xFF
                     }
-                    sendBinaryCommand(byteDuration.toByte())
+                    sendBinaryCommand(0x80.toByte(), byteDuration.toByte())
                 }
 
                 "Adaptive" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "Adaptive: $isOn")
-                    sendBinaryCommand(if (isOn) 0x41 else 0x42) //Adaptive on/off
+                    sendBinaryCommand(0x80.toByte(), if (isOn) 0x41 else 0x42) //Adaptive on/off
                 }
 
                 "GuideMeToHome" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "GuideMeToHome: $isOn")
-                    sendBinaryCommand(if (isOn) 0x31 else 0x32) //GuideMeToHom on/off
+                    sendBinaryCommand(0x80.toByte(), if (isOn) 0x31 else 0x32) //GuideMeToHom on/off
                 }
 
                 "HandBrake" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "HandBrake: $isOn")
-                    sendBinaryCommand(if (isOn) 0x21 else 0x22) //HandBrake on/off
+                    sendBinaryCommand(0x80.toByte(), if (isOn) 0x21 else 0x22) //HandBrake on/off
                 }
 
                 "DriverPosition" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "DriverPosition: $isOn")
-                    sendBinaryCommand(if (isOn) 0x11 else 0x12) //DriverPosition on/off
+                    sendBinaryCommand(0x80.toByte(), if (isOn) 0x11 else 0x12) //DriverPosition on/off
                 }
 
                 "LimitSpeed0" -> {
-                    sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
+                    sendBinaryCommand(0x80.toByte(), 0x80.toByte()) // ограничение 0 т.е выключение
                 }
 
                 "LimitSpeed10" -> {
-                    sendBinaryCommand(0x81.toByte()) // ограничение 10
+                    sendBinaryCommand(0x80.toByte(), 0x81.toByte()) // ограничение 10
                 }
 
                 "LimitSpeed40" -> {
-                    sendBinaryCommand(0x84.toByte()) // ограничение 40
+                    sendBinaryCommand(0x80.toByte(), 0x84.toByte()) // ограничение 40
                 }
                 "SportTheme" -> {
                     val theme = intent.getStringExtra("theme")
                     when (theme){
                         "red" -> {
-                            sendBinaryCommand(0x93.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x93.toByte())
                         }
                         "blue" -> {
-                            sendBinaryCommand(0x95.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x95.toByte())
                         }
                         "yellow" -> {
-                            sendBinaryCommand(0x94.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x94.toByte())
                         }
                         else -> {
-                            sendBinaryCommand(0x93.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x93.toByte())
                         }
                     }
                 }
@@ -157,53 +159,56 @@ class UsbService : Service(), KoinComponent {
                     val theme = intent.getStringExtra("theme")
                     when (theme){
                         "red" -> {
-                            sendBinaryCommand(0x90.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x90.toByte())
                         }
                         "blue" -> {
-                            sendBinaryCommand(0x92.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x92.toByte())
                         }
                         "yellow" -> {
-                            sendBinaryCommand(0x91.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x91.toByte())
                         }
                         else -> {
-                            sendBinaryCommand(0x91.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x91.toByte())
                         }
                     }
                 }
                 "LeftWindow" -> {
                     val id = intent.getIntExtra("id", 0)
                     when (id){
-                        1 -> sendBinaryCommand(0x24.toByte())
-                        2 -> sendBinaryCommand(0x25.toByte())
-                        3 -> sendBinaryCommand(0x26.toByte())
-                        4 -> sendBinaryCommand(0x27.toByte())
-                        5 -> sendBinaryCommand(0x28.toByte())
-                        6 -> sendBinaryCommand(0x29.toByte())
+                        1 -> sendBinaryCommand(0x80.toByte(), 0x24.toByte())
+                        2 -> sendBinaryCommand(0x80.toByte(), 0x25.toByte())
+                        3 -> sendBinaryCommand(0x80.toByte(), 0x26.toByte())
+                        4 -> sendBinaryCommand(0x80.toByte(), 0x27.toByte())
+                        5 -> sendBinaryCommand(0x80.toByte(), 0x28.toByte())
+                        6 -> sendBinaryCommand(0x80.toByte(), 0x29.toByte())
                     }
 
                 }
                 "RightWindow" -> {
                     val id = intent.getIntExtra("id", 0)
                     when (id){
-                        1 -> sendBinaryCommand(0x34.toByte())
-                        2 -> sendBinaryCommand(0x35.toByte())
-                        3 -> sendBinaryCommand(0x36.toByte())
-                        4 -> sendBinaryCommand(0x37.toByte())
-                        5 -> sendBinaryCommand(0x38.toByte())
-                        6 -> sendBinaryCommand(0x39.toByte())
+                        1 -> sendBinaryCommand(0x80.toByte(), 0x34.toByte())
+                        2 -> sendBinaryCommand(0x80.toByte(), 0x35.toByte())
+                        3 -> sendBinaryCommand(0x80.toByte(), 0x36.toByte())
+                        4 -> sendBinaryCommand(0x80.toByte(), 0x37.toByte())
+                        5 -> sendBinaryCommand(0x80.toByte(), 0x38.toByte())
+                        6 -> sendBinaryCommand(0x80.toByte(), 0x39.toByte())
                     }
                 }
             }
         }
     }
 
-    fun sendBinaryCommand(command: Byte) {
-        val message = byteArrayOf(command)
+    @OptIn(ExperimentalStdlibApi::class)
+    fun sendBinaryCommand(byte1: Byte, byte2: Byte) {
+        val message = byteArrayOf(byte1, byte2)
+        Log.e(TAG, "sendBinaryCommand = ${message.toHexString()}")
         serialPort?.write(message)
     }
+
     @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
     fun sendBinaryMessage(message: ByteArray){
-        Log.e(TAG, "sendBinaryMessage = ${message.toHexString()})")
+        Log.e(TAG, "sendBinaryMessage = ${message.toHexString()}")
         serialPort?.write(message)
     }
 
@@ -342,18 +347,17 @@ class UsbService : Service(), KoinComponent {
         setupMusicUpdates()
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun setupMusicUpdates() {
         CoroutineScope(Dispatchers.Default).launch {
             canRepo.musicFlow.collect { packets ->
-                var lastTime = System.nanoTime() // Засекаем время первого пакета
-
-                packets.forEachIndexed { index, packet ->
-                    sendBinaryMessage(packet) // Отправка пакет
-//                    while ((System.nanoTime() - lastTime) < delayMicros * 1_000) {
-//                        //
-//                    }
-//                    lastTime = System.nanoTime() // Обновляем время последнего пакета
+                packets.forEach {
+                    Log.e(TAG, "packet = ${it.toHexString()}")
                 }
+                val allPackets = packets.fold(ByteArray(0)) { acc, packet ->
+                    acc + packet
+                }
+                sendBinaryMessage(allPackets)
             }
         }
 
@@ -383,82 +387,82 @@ class UsbService : Service(), KoinComponent {
 
                         Mode.HIGH -> {
                             showOverlayMessage(R.drawable.alert_max_pos)
-                            sendBinaryCommand(0x81.toByte()) // ограничение 10
+                            sendBinaryCommand(0x80.toByte(), 0x81.toByte()) // ограничение 10
                         }
 
                         Mode.MID -> {
                             showOverlayMessage(R.drawable.alert_mid_pos)
-                            sendBinaryCommand(0x84.toByte()) // ограничение 40
+                            sendBinaryCommand(0x80.toByte(), 0x84.toByte()) // ограничение 40
                         }
 
                         Mode.NORMAL -> {
                             showOverlayMessage(R.drawable.alert_normal_pos)
-                            sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte()) // ограничение 0 т.е выключение
                         }
 
                         Mode.LOW -> {
                             showOverlayMessage(R.drawable.alert_low_pos)
-                            sendBinaryCommand(0x81.toByte()) // ограничение 10
+                            sendBinaryCommand(0x80.toByte(), 0x81.toByte()) // ограничение 10
                         }
 
                         Mode.LOW_TO_NORMAL -> {
                             showOverlayMessage(R.drawable.alert_low_to_normal_pos)
-                            sendBinaryCommand(0x80.toByte()) // ограничение 0 т.е выключение
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte()) // ограничение 0 т.е выключение
                         }
 
                         Mode.LOW_TO_MED -> {
                             showOverlayMessage(R.drawable.alert_low_to_mid_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.LOW_TO_HIGH -> {
                             showOverlayMessage(R.drawable.alert_low_to_max_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.NORMAL_TO_LOW -> {
                             showOverlayMessage(R.drawable.alert_normal_to_low_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.NORMAL_TO_MED -> {
                             showOverlayMessage(R.drawable.alert_normal_to_mid_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.NORMAL_TO_HIGH -> {
                             showOverlayMessage(R.drawable.alert_normal_to_max_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.MED_TO_LOW -> {
                             showOverlayMessage(R.drawable.alert_mid_to_low_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.MED_TO_NORMAL -> {
                             showOverlayMessage(R.drawable.alert_mid_to_normal_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.MED_TO_HIGH -> {
                             showOverlayMessage(R.drawable.alert_mid_to_max_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.HIGH_TO_LOW -> {
                             showOverlayMessage(R.drawable.alert_max_to_low_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.HIGH_TO_NORMAL -> {
                             showOverlayMessage(R.drawable.alert_max_to_normal_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
 
                         Mode.HIGH_TO_MED -> {
                             showOverlayMessage(R.drawable.alert_max_to_mid_pos)
-                            sendBinaryCommand(0x80.toByte())
+                            sendBinaryCommand(0x80.toByte(), 0x80.toByte())
                         }
                     }
                     suspensionBuffer = it.suspensionState.mode

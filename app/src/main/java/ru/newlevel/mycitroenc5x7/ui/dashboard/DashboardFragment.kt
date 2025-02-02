@@ -16,6 +16,7 @@ import ru.newlevel.mycitroenc5x7.R
 import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.databinding.FragmentDashboardBinding
 import ru.newlevel.mycitroenc5x7.models.CmbColor
+import ru.newlevel.mycitroenc5x7.models.CmbGlobalTheme
 import ru.newlevel.mycitroenc5x7.models.PersonSettingsStatus
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
@@ -110,10 +111,23 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             binding.seekBar.progress = 15
             binding.seekBar.isActivated = false
             binding.seekBar.isClickable = false
+            binding.seekBar.isEnabled = false
         } else {
             binding.seekBar.progress = status.cmbBrightness
             binding.seekBar.isActivated = true
             binding.seekBar.isClickable = true
+            binding.seekBar.isEnabled = true
+        }
+        if (status.cmbGlobalTheme == CmbGlobalTheme.THEME_NORMAL){
+            binding.tvThemePerfomance.setTextColor(ContextCompat.getColor(requireContext(), R.color.semi_yellow))
+            binding.tvThemePerfomance.alpha = 0.5f
+            binding.tvThemeNormal.setTextColor(ContextCompat.getColor(requireContext(), R.color.main_yellow))
+            binding.tvThemeNormal.alpha = 1f
+        } else {
+            binding.tvThemeNormal.setTextColor(ContextCompat.getColor(requireContext(), R.color.semi_yellow))
+            binding.tvThemeNormal.alpha = 0.5f
+            binding.tvThemePerfomance.setTextColor(ContextCompat.getColor(requireContext(), R.color.main_yellow))
+            binding.tvThemePerfomance.alpha = 1f
         }
         setLeftWindow(status.cmbThemeLeft)
         setRightWindow(status.cmbThemeRight)
@@ -179,6 +193,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
 
     private fun setupComfortListeners() {
+        binding.tvThemeNormal.setOnClickListener {
+            sendThemePerformanceOn(false)
+        }
+        binding.tvThemePerfomance.setOnClickListener {
+            sendThemePerformanceOn(true)
+        }
         binding.switchHandbrake.setOnClickListener {
             val isCheck = binding.switchHandbrake.isChecked
             sendHandBrake(isCheck)
@@ -326,6 +346,12 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         intent.putExtra("isOn", isOn)
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
     }
+    fun sendThemePerformanceOn(isOn: Boolean) {
+        val intent = Intent("ru.newlevel.mycitroenc5x7.service.LOCAL_BROADCAST")
+        intent.putExtra("message", "ThemePerformance")
+        intent.putExtra("isOn", isOn)
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
+    }
 
     fun sendESP(isOn: Boolean) {
         val intent = Intent("ru.newlevel.mycitroenc5x7.service.LOCAL_BROADCAST")
@@ -408,4 +434,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         }
     }
 }
+
+
 

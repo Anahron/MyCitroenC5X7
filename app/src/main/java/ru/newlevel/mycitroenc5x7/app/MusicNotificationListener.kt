@@ -25,7 +25,6 @@ class MusicNotificationListener : NotificationListenerService(), KoinComponent {
             val artist = extras.getString("android.text")
             val progress = extras.getString("android.progress")
             val progressMax = extras.getString("android.progressMax")
-     //       Toast.makeText(applicationContext, "Notification Posted: Title: $title, Artist: $artist", Toast.LENGTH_LONG).show()
             Log.e(TAG, "Notification Posted: Title: $title, Artist: $artist")
             Log.e(TAG, "packageNam: $packageName")
             Log.e(TAG, "progress: $progress, progressMax: $progressMax")
@@ -36,13 +35,8 @@ class MusicNotificationListener : NotificationListenerService(), KoinComponent {
             }
         }
     }
-
     override fun onNotificationRemoved(statusBarNotification: StatusBarNotification) {
         // Обработка удаления уведомления
     }
-}
-object Buffer{
-   // var bufferTitle = ""
-  //  var bufferArtist = ""
 }
 

@@ -5,6 +5,7 @@ import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.models.Alert
 import ru.newlevel.mycitroenc5x7.models.CanInfoModel
 import ru.newlevel.mycitroenc5x7.models.CmbColor
+import ru.newlevel.mycitroenc5x7.models.CmbGlobalTheme
 import ru.newlevel.mycitroenc5x7.models.Importance
 import ru.newlevel.mycitroenc5x7.models.Mode
 import ru.newlevel.mycitroenc5x7.models.MomentTripData
@@ -14,6 +15,7 @@ import ru.newlevel.mycitroenc5x7.models.TripData
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class CanUtils {
+    private var count: Byte = 0x01
     init {
     //TODO test
         // 328      4 03 10 00 00       тож выводится
@@ -22,8 +24,8 @@ class CanUtils {
         // 328 8 07 28 01 00 02 FF FE 20 это было последним перед сообщением с текстом
     val text = "Получилось, епта"
     val packets = encodeTextForCAN(text)
-        val canId = 0x328;
-        var canDlc: Byte = 0x00;
+        val canId = 0x328
+        var canDlc: Byte = 0x00
     // Выводим пакеты в читаемом виде
     packets.forEachIndexed { index, packet ->
         canDlc = packet.size.toByte()
@@ -76,10 +78,12 @@ class CanUtils {
     //byte colorSport = 0x00; 00 - желтый, 40 - красный, 80 синий
     //byte themeLeft = 0x01;
     //byte themeRight = 0x02;
+    // global theme normal 0x00 performance 0x04?
     private fun decodeCMBforESPStatus(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
         return personSettingsStatus.copy(
             espStatus = !checkBit(canData.data[0],4), // esp
             parktronics = !checkBit(canData.data[0],6),
+            cmbGlobalTheme = if (checkBit(canData.data[0], 0)) CmbGlobalTheme.THEME_PERFORMANCE else CmbGlobalTheme.THEME_NORMAL,
             colorSport = when(canData.data[4].toInt()) {
                 0x00 -> CmbColor.COLOR_YELLOW
                 0x40 -> CmbColor.COLOR_RED
@@ -173,9 +177,9 @@ class CanUtils {
     // data[3] brightness  0010 1110 5 бит с конца 0 - день 1 - ночь, 4 бит dark mode, первые 0-3 - яркость - 0-15 "20" > "2F"
     private fun decodeBrightness(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
         //   val isDay = !checkBit(canData.data[3], 5)
-        val isDay = canData.data[3].toInt() < 32
+        val isDay = canData.data[0].toInt() < 32
 
-        val cmbBrightness = canData.data[3].toInt() and 0x0F
+        val cmbBrightness = canData.data[0].toInt() and 0x0F
         return personSettingsStatus.copy(isDay = isDay, cmbBrightness = cmbBrightness)
     }
 
@@ -209,21 +213,38 @@ class CanUtils {
     }
 
     fun encodeTextForCAN(inputText: String): List<ByteArray> {
-        val utf8Bytes = inputText.toByteArray(Charsets.UTF_8)
+     //   val utf8Bytes = inputText.toByteArray(Charsets.UTF_8) + 0x00.toByte()
+
+        val utf8Bytes: ByteArray = byteArrayOf(
+            0x5A, 0x69, 0x76, 0x65, 0x72, 0x74, 0x2C,
+            0x4D.toByte(), 0x44.toByte(), 0x65.toByte(), 0x65.toByte(), 0x20.toByte(), 0x2D.toByte(), 0x20.toByte(),
+            0xD0.toByte(), 0x94.toByte(), 0xD0.toByte(), 0xB2.toByte(), 0xD1.toByte(), 0x83.toByte(), 0xD1.toByte(),
+            0x81.toByte(), 0xD0.toByte(), 0xBC.toByte(), 0xD1.toByte(), 0x8B.toByte(), 0xD1.toByte(), 0x81.toByte(),
+            0xD0.toByte(), 0xBB.toByte(), 0xD0.toByte(), 0xB5.toByte(), 0xD0.toByte(), 0xBD.toByte(), 0xD0.toByte(),
+            0xBD.toByte(), 0xD0.toByte(), 0xBE.toByte()
+        )
         val totalLength = utf8Bytes.size + 6 // длина текста + 6 служебных байт
         val packets = mutableListOf<ByteArray>()
-
+//        // First Frame
+//        val firstPacket = ByteArray(8)
+//        firstPacket[0] = 0x10.toByte()
+//        firstPacket[1] = totalLength.toByte() // Длина сообщения
+//        firstPacket[2] = 0x28.toByte() // Служебный байт для блютуса
+//        firstPacket[3] = 0x01.toByte()
+//        firstPacket[4] = 0x00.toByte()
+//        firstPacket[5] = count // counter
+//        firstPacket[6] = 0xFF.toByte()
+//        firstPacket[7] = 0xFE.toByte()
         // First Frame
         val firstPacket = ByteArray(8)
         firstPacket[0] = 0x10.toByte()
-        firstPacket[1] = totalLength.toByte() // Длина сообщения
+        firstPacket[1] = (totalLength+1).toByte() // Длина сообщения
         firstPacket[2] = 0x28.toByte() // Служебный байт для блютуса
         firstPacket[3] = 0x01.toByte()
         firstPacket[4] = 0x00.toByte()
-        firstPacket[5] = 0x02.toByte() // counter
+        firstPacket[5] = 0x8A.toByte()
         firstPacket[6] = 0xFF.toByte()
         firstPacket[7] = 0xFE.toByte()
-
 //        firstPacket[2] = 0x26.toByte() // Служебный байт для usb трек 1/1
 //       firstPacket[3] = 0x01.toByte()
 //        firstPacket[4] = 0x00.toByte()
@@ -233,7 +254,7 @@ class CanUtils {
 
     //    utf8Bytes.copyInto(firstPacket, 3, 0, minOf(utf8Bytes.size, 5)) // Первые 5 байтов данных
         packets.add(firstPacket)
-
+        count++
         // Формируем последующие пакеты (Consecutive Frames)
      //   var byteIndex = 5
         var byteIndex = 0

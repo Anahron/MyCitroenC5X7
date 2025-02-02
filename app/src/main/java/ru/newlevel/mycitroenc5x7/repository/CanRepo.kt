@@ -33,24 +33,12 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
     private val _musicFlow = MutableSharedFlow<List<ByteArray>>()
     val musicFlow : SharedFlow<List<ByteArray>> = _musicFlow
 
-//    init {
-//        coroutineScope.launch {
-//            while (true) {
-//                delay(8000)  // Задержка в 8 секунд
-////                val resultDecode1 = canUtils.encodeTextForCAN("asd.mp3")
-////                val modifiedResultDecode1 = resultDecode1.map { packet ->
-////                    val newPacket = packet.toMutableList()
-////                    newPacket.add(0, newPacket.size.toByte())
-////                    newPacket.add(0, (0xFF).toByte())
-////                    while (newPacket.size < 10) {
-////                        newPacket.add(0x00.toByte())  // Добавляем 0x00 в конец
-////                    }
-////                    newPacket.toByteArray()
-////                }
-////                _musicFlow.emit(modifiedResultDecode1)
-////                delay(150)
-//                val resultDecode = canUtils.encodeTextForCAN("Получилось, епта")
-//                val modifiedResultDecode = resultDecode.map { packet ->
+    init {
+        coroutineScope.launch {
+            while (true) {
+                delay(8000)  // Задержка в 8 секунд
+//                val resultDecode1 = canUtils.encodeTextForCAN("asd.mp3")
+//                val modifiedResultDecode1 = resultDecode1.map { packet ->
 //                    val newPacket = packet.toMutableList()
 //                    newPacket.add(0, newPacket.size.toByte())
 //                    newPacket.add(0, (0xFF).toByte())
@@ -59,10 +47,22 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
 //                    }
 //                    newPacket.toByteArray()
 //                }
-//                _musicFlow.emit(modifiedResultDecode)
-//            }
-//        }
-//    }
+//                _musicFlow.emit(modifiedResultDecode1)
+//                delay(150)
+                val resultDecode = canUtils.encodeTextForCAN("Получилось, епта")
+                val modifiedResultDecode = resultDecode.map { packet ->
+                    val newPacket = packet.toMutableList()
+                    newPacket.add(0, newPacket.size.toByte())
+                    newPacket.add(0, (0xFF).toByte())
+                    while (newPacket.size < 10) {
+                        newPacket.add(0x00.toByte())  // Добавляем 0x00 в конец
+                    }
+                    newPacket.toByteArray()
+                }
+                _musicFlow.emit(modifiedResultDecode)
+            }
+        }
+    }
 
     fun removeSpecialCharacters(input: String): String {
         return input.replace("[^\\w\\s]".toRegex(), "").trim()

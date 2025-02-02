@@ -8,7 +8,8 @@ data class PersonSettingsStatus(val adaptiveLighting: Boolean = false, val guide
     val durationGuide: Int = 0, val parktronics: Boolean = false, val driverWelcome: Boolean = false,
     val automaticHandbrake: Boolean = false, val cmbBrightness: Int = 0, val isDay: Boolean = true, val espStatus: Boolean = false
 , val colorNormal:CmbColor = CmbColor.COLOR_YELLOW, val colorSport:CmbColor = CmbColor.COLOR_YELLOW,
-                                val cmbThemeLeft: Int = 0, val cmbThemeRight: Int = 0)
+                                val cmbThemeLeft: Int = 0, val cmbThemeRight: Int = 0, val cmbGlobalTheme: CmbGlobalTheme = CmbGlobalTheme.THEME_NORMAL
+)
 
 data class Alert(
     val message: String,
@@ -23,4 +24,8 @@ enum class CmbColor {
     COLOR_YELLOW,
     COLOR_RED,
     COLOR_BLUE
+}
+enum class CmbGlobalTheme {
+    THEME_NORMAL,
+    THEME_PERFORMANCE
 }
