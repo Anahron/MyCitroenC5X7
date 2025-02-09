@@ -57,4 +57,6 @@
     <string name="nothing">Ничего</string>
     <string name="right">Правое</string>
     <string name="left">Левое</string>
+    <string name="performance">Performance</string>
+    <string name="normal">Normal</string>
 </resources>

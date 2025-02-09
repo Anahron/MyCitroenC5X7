@@ -31,6 +31,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ru.newlevel.mycitroenc5x7.MainActivity
@@ -53,6 +55,8 @@ class UsbService : Service(), KoinComponent {
     val buffer = StringBuilder()
     private var suspensionBuffer: Mode = Mode.NONE
     private val channel = Channel<ByteArray>(Channel.UNLIMITED)
+    private val sendMutex = Mutex() // Гарантирует, что сообщения отправляются по одному
+    private var lastSentTime = 0L
 
     private val localReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -66,6 +70,7 @@ class UsbService : Service(), KoinComponent {
                     Log.e(TAG, "IsDay: $isDay")
                     sendBinaryCommand(0x80.toByte(), level.toByte())
                 }
+
                 "ResetTrip1" -> {
                     val reset = intent.getBooleanExtra("reset", false)
                     if (reset) sendBinaryCommand(0x80.toByte(), 0x71)
@@ -73,23 +78,26 @@ class UsbService : Service(), KoinComponent {
 
                 "ResetTrip2" -> {
                     val reset = intent.getBooleanExtra("reset", false)
-                    if (reset) sendBinaryCommand(0x80.toByte(),0x72)
+                    if (reset) sendBinaryCommand(0x80.toByte(), 0x72)
                 }
+
                 "ThemePerformance" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
-                    sendBinaryCommand(0x80.toByte(),if (isOn) 0x96.toByte() else 0x97.toByte())
+                    sendBinaryCommand(0x80.toByte(), if (isOn) 0x96.toByte() else 0x97.toByte())
                 }
 
                 "Parktronics" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "Parktronics: $isOn")
-                    sendBinaryCommand(0x80.toByte(),if (isOn) 0x61 else 0x62) //парктроник on/off
+                    sendBinaryCommand(0x80.toByte(), if (isOn) 0x61 else 0x62) //парктроник on/off
                 }
+
                 "Esp" -> {
                     val isOn = intent.getBooleanExtra("isOn", true)
                     Log.e(TAG, "Esp: $isOn")
-                    sendBinaryCommand(0x80.toByte(),if (isOn) 0x63 else 0x64) //парктроник on/off
+                    sendBinaryCommand(0x80.toByte(), if (isOn) 0x63 else 0x64) //парктроник on/off
                 }
+
                 "GuideMeToHomeDuration" -> {
                     val duration = intent.getIntExtra("Duration", 15)
                     Log.e(TAG, "Duration: $duration")
@@ -138,43 +146,52 @@ class UsbService : Service(), KoinComponent {
                 "LimitSpeed40" -> {
                     sendBinaryCommand(0x80.toByte(), 0x84.toByte()) // ограничение 40
                 }
+
                 "SportTheme" -> {
                     val theme = intent.getStringExtra("theme")
-                    when (theme){
+                    when (theme) {
                         "red" -> {
                             sendBinaryCommand(0x80.toByte(), 0x93.toByte())
                         }
+
                         "blue" -> {
                             sendBinaryCommand(0x80.toByte(), 0x95.toByte())
                         }
+
                         "yellow" -> {
                             sendBinaryCommand(0x80.toByte(), 0x94.toByte())
                         }
+
                         else -> {
                             sendBinaryCommand(0x80.toByte(), 0x93.toByte())
                         }
                     }
                 }
+
                 "Theme" -> {
                     val theme = intent.getStringExtra("theme")
-                    when (theme){
+                    when (theme) {
                         "red" -> {
                             sendBinaryCommand(0x80.toByte(), 0x90.toByte())
                         }
+
                         "blue" -> {
                             sendBinaryCommand(0x80.toByte(), 0x92.toByte())
                         }
+
                         "yellow" -> {
                             sendBinaryCommand(0x80.toByte(), 0x91.toByte())
                         }
+
                         else -> {
                             sendBinaryCommand(0x80.toByte(), 0x91.toByte())
                         }
                     }
                 }
+
                 "LeftWindow" -> {
                     val id = intent.getIntExtra("id", 0)
-                    when (id){
+                    when (id) {
                         1 -> sendBinaryCommand(0x80.toByte(), 0x24.toByte())
                         2 -> sendBinaryCommand(0x80.toByte(), 0x25.toByte())
                         3 -> sendBinaryCommand(0x80.toByte(), 0x26.toByte())
@@ -184,9 +201,10 @@ class UsbService : Service(), KoinComponent {
                     }
 
                 }
+
                 "RightWindow" -> {
                     val id = intent.getIntExtra("id", 0)
-                    when (id){
+                    when (id) {
                         1 -> sendBinaryCommand(0x80.toByte(), 0x34.toByte())
                         2 -> sendBinaryCommand(0x80.toByte(), 0x35.toByte())
                         3 -> sendBinaryCommand(0x80.toByte(), 0x36.toByte())
@@ -203,14 +221,31 @@ class UsbService : Service(), KoinComponent {
     fun sendBinaryCommand(byte1: Byte, byte2: Byte) {
         val message = byteArrayOf(byte1, byte2)
         Log.e(TAG, "sendBinaryCommand = ${message.toHexString()}")
-        serialPort?.write(message)
+        sendBinaryMessage(message)
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
-    fun sendBinaryMessage(message: ByteArray){
-        Log.e(TAG, "sendBinaryMessage = ${message.toHexString()}")
-        serialPort?.write(message)
+    @OptIn(ExperimentalStdlibApi::class)
+    fun sendBinaryMessage(message: ByteArray) {
+        serviceScope.launch {
+            sendMutex.withLock { // Запускаем отправку в единственном экземпляре
+                val currentTime = System.currentTimeMillis()
+                val timeSinceLastSend = currentTime - lastSentTime
+
+                if (timeSinceLastSend < 300) {
+                    delay(300 - timeSinceLastSend) // Ждём нужную задержку
+                }
+
+                lastSentTime = System.currentTimeMillis()
+                Log.e(TAG, "sendBinaryMessage = ${message.toHexString()}")
+                serialPort?.write(message)
+            }
+        }
     }
+//    @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
+//    fun sendBinaryMessage(message: ByteArray) {
+//        Log.e(TAG, "sendBinaryMessage = ${message.toHexString()}")
+//        serialPort?.write(message)
+//    }
 
     init {
         serviceScope.launch {
@@ -263,8 +298,6 @@ class UsbService : Service(), KoinComponent {
         setupConnection()
         // getMedia()
     }
-
-
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -345,31 +378,31 @@ class UsbService : Service(), KoinComponent {
         startForeground(1, notification)
         setupSuspensionUpdates()
         setupMusicUpdates()
+        setupNaviUpdates()
+    }
+
+    private fun setupNaviUpdates() {
+        CoroutineScope(Dispatchers.Default).launch {
+            canRepo.naviFlow.collect { navInfo ->
+                sendBinaryCommand(0x80.toByte(), navInfo.distance)
+                sendBinaryCommand(0x80.toByte(), navInfo.turn)
+            }
+        }
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     private fun setupMusicUpdates() {
         CoroutineScope(Dispatchers.Default).launch {
             canRepo.musicFlow.collect { packets ->
-                packets.forEach {
-                    Log.e(TAG, "packet = ${it.toHexString()}")
-                }
+//                packets.forEach {
+//                    Log.e(TAG, "packet = ${it.toHexString()}")
+//                }
                 val allPackets = packets.fold(ByteArray(0)) { acc, packet ->
                     acc + packet
                 }
                 sendBinaryMessage(allPackets)
             }
         }
-
-//        CoroutineScope(Dispatchers.Default).launch {
-//            canRepo.musicFlow.collect {
-//                it.forEachIndexed { index, packet ->
-//                    delay(12)
-//                    sendBinaryMessage(packet)
-//                    Log.e(TAG, ("sendBinaryMessage =  ${index + 1}: " + packet.joinToString(" ") { String.format("%02X", it) }))
-//                }
-//            }
-//        }
     }
 
     private fun setupSuspensionUpdates() {

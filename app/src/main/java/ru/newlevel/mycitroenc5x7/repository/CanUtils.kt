@@ -22,7 +22,7 @@ class CanUtils {
         // 328      8 10 08 00 01 24 12 4D 43
         // 328      4 03 10 00 00
         // 328 8 07 28 01 00 02 FF FE 20 это было последним перед сообщением с текстом
-    val text = "Получилось, епта"
+    val text = "Да - посылаю"
     val packets = encodeTextForCAN(text)
         val canId = 0x328
         var canDlc: Byte = 0x00
@@ -108,7 +108,7 @@ class CanUtils {
             cmbThemeRight = when(canData.data[2].toInt()) {
                 0x5A -> 1
                 0x30 -> 2
-                0x17 -> 3
+                0x38 -> 3
                 0x29 -> 4
                 0x50 -> 5
                 0x11 -> 6
@@ -213,16 +213,16 @@ class CanUtils {
     }
 
     fun encodeTextForCAN(inputText: String): List<ByteArray> {
-     //   val utf8Bytes = inputText.toByteArray(Charsets.UTF_8) + 0x00.toByte()
+        val utf8Bytes = inputText.toByteArray(Charsets.UTF_8)
 
-        val utf8Bytes: ByteArray = byteArrayOf(
-            0x5A, 0x69, 0x76, 0x65, 0x72, 0x74, 0x2C,
-            0x4D.toByte(), 0x44.toByte(), 0x65.toByte(), 0x65.toByte(), 0x20.toByte(), 0x2D.toByte(), 0x20.toByte(),
-            0xD0.toByte(), 0x94.toByte(), 0xD0.toByte(), 0xB2.toByte(), 0xD1.toByte(), 0x83.toByte(), 0xD1.toByte(),
-            0x81.toByte(), 0xD0.toByte(), 0xBC.toByte(), 0xD1.toByte(), 0x8B.toByte(), 0xD1.toByte(), 0x81.toByte(),
-            0xD0.toByte(), 0xBB.toByte(), 0xD0.toByte(), 0xB5.toByte(), 0xD0.toByte(), 0xBD.toByte(), 0xD0.toByte(),
-            0xBD.toByte(), 0xD0.toByte(), 0xBE.toByte()
-        )
+//        val utf8Bytes: ByteArray = byteArrayOf(
+//            0x5A, 0x69, 0x76, 0x65, 0x72, 0x74, 0x2C,
+//            0x4D.toByte(), 0x44.toByte(), 0x65.toByte(), 0x65.toByte(), 0x20.toByte(), 0x2D.toByte(), 0x20.toByte(),
+//            0xD0.toByte(), 0x94.toByte(), 0xD0.toByte(), 0xB2.toByte(), 0xD1.toByte(), 0x83.toByte(), 0xD1.toByte(),
+//            0x81.toByte(), 0xD0.toByte(), 0xBC.toByte(), 0xD1.toByte(), 0x8B.toByte(), 0xD1.toByte(), 0x81.toByte(),
+//            0xD0.toByte(), 0xBB.toByte(), 0xD0.toByte(), 0xB5.toByte(), 0xD0.toByte(), 0xBD.toByte(), 0xD0.toByte(),
+//            0xBD.toByte(), 0xD0.toByte(), 0xBE.toByte()
+//        )
         val totalLength = utf8Bytes.size + 6 // длина текста + 6 служебных байт
         val packets = mutableListOf<ByteArray>()
 //        // First Frame
@@ -238,11 +238,11 @@ class CanUtils {
         // First Frame
         val firstPacket = ByteArray(8)
         firstPacket[0] = 0x10.toByte()
-        firstPacket[1] = (totalLength+1).toByte() // Длина сообщения
+        firstPacket[1] = totalLength.toByte() // Длина сообщения
         firstPacket[2] = 0x28.toByte() // Служебный байт для блютуса
         firstPacket[3] = 0x01.toByte()
         firstPacket[4] = 0x00.toByte()
-        firstPacket[5] = 0x8A.toByte()
+        firstPacket[5] = 0x01.toByte()
         firstPacket[6] = 0xFF.toByte()
         firstPacket[7] = 0xFE.toByte()
 //        firstPacket[2] = 0x26.toByte() // Служебный байт для usb трек 1/1

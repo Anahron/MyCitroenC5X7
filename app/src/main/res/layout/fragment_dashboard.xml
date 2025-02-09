@@ -376,18 +376,18 @@
                 android:id="@+id/tv_theme_normal"
                 android:layout_width="wrap_content"
                 style="@style/TextItemsStyleCMB"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Normal"
+                android:text="@string/normal"
                 android:src="@drawable/vector_nothing" />
 
             <TextView
                 android:id="@+id/tv_theme_perfomance"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 style="@style/TextItemsStyleCMB"
                 android:layout_gravity="center"
-                android:text="Perfomance"
+                android:text="@string/performance"
                 android:src="@drawable/vector_nothing" />
         </LinearLayout>
     </LinearLayout>
