@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -24,29 +25,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupListeners()
+        collectUiState()
+        collectTripState()
+    }
 
-        binding.buttonReset.setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.custom_dialog, null)
-            val dialogBuilder = AlertDialog.Builder(requireContext())
-                .setView(dialogView)
-
-
-            val buttonYes = dialogView.findViewById<Button>(R.id.buttonYes)
-            val buttonNo = dialogView.findViewById<Button>(R.id.buttonNo)
-
-            val dialog = dialogBuilder.create()
-            dialog.window?.setBackgroundDrawableResource(R.color.transparent)
-
-            buttonYes.setOnClickListener {
-                sendResetTrip(homeViewModel.uiState.value)
-                dialog.dismiss()
-            }
-
-            buttonNo.setOnClickListener {
-                dialog.dismiss()
-            }
-            dialog.show()
+    private fun setupListeners() {
+        binding.buttonResetDay1.setOnClickListener {
+            showDialog(MessageType.DAY1)
         }
+        binding.buttonResetDay2.setOnClickListener {
+            showDialog(MessageType.DAY2)
+        }
+        binding.buttonReset.setOnClickListener {
+            showDialog(MessageType.TRIP)
+        }
+
         binding.tripGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
             when (checkedId) {
                 R.id.button_1 -> if (isChecked) {
@@ -62,10 +56,38 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         }
-        collectUiState()
-        collectTripState()
     }
 
+    fun showDialog(message: MessageType) {
+        val dialogView = layoutInflater.inflate(R.layout.custom_dialog, null)
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+        dialogView.findViewById<TextView>(R.id.dialogMessage).text = when (message) {
+            MessageType.TRIP -> requireContext().getString(R.string.a_you_sure_to_reset)
+            MessageType.DAY1 -> requireContext().getString(R.string.a_you_sure_to_reset_day1)
+            MessageType.DAY2 -> requireContext().getString(R.string.a_you_sure_to_reset_day2)
+        }
+
+        val buttonYes = dialogView.findViewById<Button>(R.id.buttonYes)
+        val buttonNo = dialogView.findViewById<Button>(R.id.buttonNo)
+
+        val dialog = dialogBuilder.create()
+        dialog.window?.setBackgroundDrawableResource(R.color.transparent)
+
+        buttonYes.setOnClickListener {
+            when (message) {
+                MessageType.TRIP -> sendResetTrip(homeViewModel.uiState.value)
+                MessageType.DAY1 -> homeViewModel.updateDay1()
+                MessageType.DAY2 -> homeViewModel.updateDay2()
+            }
+            dialog.dismiss()
+        }
+
+        buttonNo.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
 
     fun sendResetTrip(position: Int) {
         val intent = Intent("ru.newlevel.mycitroenc5x7.service.LOCAL_BROADCAST")
@@ -79,6 +101,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             homeViewModel.state.collect {
                 binding.textDistanceTraveledMoment.text = it.totalDistance
                 binding.textL100Moment.text = it.litersPer100km
+                binding.textOdometerFact.text = it.odometer.toString()
+                binding.textTripDay1.text = (it.odometer - homeViewModel.dayTripDataFlow.value.day1Trip).toString()
+                binding.textTripDay2.text = (it.odometer - homeViewModel.dayTripDataFlow.value.day2Trip).toString()
                 if (homeViewModel.uiState.value == 2) {
                     binding.textL100.text = it.litersPer100kmTrip1
                     binding.textSpeed.text = it.avgSpeedTrip1
@@ -105,30 +130,41 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         binding.textDistanceTraveledMoment.text = homeViewModel.state.value.totalDistance
                         binding.textL100Moment.text = homeViewModel.state.value.litersPer100km
                         binding.buttonReset.visibility = View.GONE
+                        binding.buttonResetDay1.visibility = View.VISIBLE
+                        binding.buttonResetDay2.visibility = View.VISIBLE
                     }
 
                     2 -> {
                         binding.linearMomentTrip.visibility = View.GONE
                         binding.linearTrip.visibility = View.VISIBLE
                         binding.textTime1.text = homeViewModel.state.value.engineTime1
-                        binding.textL100.text =  homeViewModel.state.value.litersPer100kmTrip1
+                        binding.textL100.text = homeViewModel.state.value.litersPer100kmTrip1
                         binding.textSpeed.text = homeViewModel.state.value.avgSpeedTrip1
                         binding.textDistance.text = homeViewModel.state.value.totalDistanceTrip1
                         binding.buttonReset.visibility = View.VISIBLE
+                        binding.buttonResetDay1.visibility = View.GONE
+                        binding.buttonResetDay2.visibility = View.GONE
                     }
 
                     3 -> {
                         binding.linearMomentTrip.visibility = View.GONE
                         binding.linearTrip.visibility = View.VISIBLE
-                        binding.textL100.text =  homeViewModel.state.value.litersPer100kmTrip2
+                        binding.textL100.text = homeViewModel.state.value.litersPer100kmTrip2
                         binding.textSpeed.text = homeViewModel.state.value.avgSpeedTrip2
                         binding.textTime1.text = homeViewModel.state.value.engineTime2
                         binding.textDistance.text = homeViewModel.state.value.totalDistanceTrip2
                         binding.buttonReset.visibility = View.VISIBLE
+                        binding.buttonResetDay1.visibility = View.GONE
+                        binding.buttonResetDay2.visibility = View.GONE
                     }
                 }
             }
         }
     }
 
+    enum class MessageType {
+        TRIP(),
+        DAY1(),
+        DAY2(),
+    }
 }

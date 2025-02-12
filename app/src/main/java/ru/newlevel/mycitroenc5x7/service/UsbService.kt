@@ -220,7 +220,6 @@ class UsbService : Service(), KoinComponent {
     @OptIn(ExperimentalStdlibApi::class)
     fun sendBinaryCommand(byte1: Byte, byte2: Byte) {
         val message = byteArrayOf(byte1, byte2)
-        Log.e(TAG, "sendBinaryCommand = ${message.toHexString()}")
         sendBinaryMessage(message)
     }
 
@@ -231,8 +230,8 @@ class UsbService : Service(), KoinComponent {
                 val currentTime = System.currentTimeMillis()
                 val timeSinceLastSend = currentTime - lastSentTime
 
-                if (timeSinceLastSend < 300) {
-                    delay(300 - timeSinceLastSend) // Ждём нужную задержку
+                if (timeSinceLastSend < 100) {
+                    delay(100 - timeSinceLastSend) // Ждём нужную задержку
                 }
 
                 lastSentTime = System.currentTimeMillis()
@@ -350,25 +349,6 @@ class UsbService : Service(), KoinComponent {
         }
     }
 
-
-// яркость приборки data[3] в 0x15b в  проще добавить переменную и сохранить в eeprom
-//    0x20 = 0010 0000
-//    0x21 = 0010 0001
-//    0x22 = 0010 0010
-//    0x23 = 0010 0011
-//    0x24 = 0010 0100
-//    0x25 = 0010 0101
-//    0x26 = 0010 0110
-//    0x27 = 0010 0111
-//    0x28 = 0010 1000
-//    0x29 = 0010 1001
-//    0x2A = 0010 1010
-//    0x2B = 0010 1011
-//    0x2C = 0010 1100
-//    0x2D = 0010 1101
-//    0x2E = 0010 1110
-//    0x2F = 0010 1111
-
     private fun startForegroundService() {
         serviceScope.launch {
             canRepo.putLog("startForegroundService")
@@ -384,8 +364,10 @@ class UsbService : Service(), KoinComponent {
     private fun setupNaviUpdates() {
         CoroutineScope(Dispatchers.Default).launch {
             canRepo.naviFlow.collect { navInfo ->
-                sendBinaryCommand(0x80.toByte(), navInfo.distance)
-                sendBinaryCommand(0x80.toByte(), navInfo.turn)
+                if (navInfo.turn != 0xBB.toByte())
+                    sendBinaryCommand(0x80.toByte(), navInfo.turn)
+                if (navInfo.distance != 0xBB.toByte() && navInfo.distance != 0xC0.toByte() && navInfo.distance != 0xC1.toByte() && navInfo.distance != 0xC2.toByte() && navInfo.distance != 0xC3.toByte())
+                    sendBinaryCommand(0x80.toByte(), navInfo.distance)
             }
         }
     }
@@ -394,9 +376,6 @@ class UsbService : Service(), KoinComponent {
     private fun setupMusicUpdates() {
         CoroutineScope(Dispatchers.Default).launch {
             canRepo.musicFlow.collect { packets ->
-//                packets.forEach {
-//                    Log.e(TAG, "packet = ${it.toHexString()}")
-//                }
                 val allPackets = packets.fold(ByteArray(0)) { acc, packet ->
                     acc + packet
                 }

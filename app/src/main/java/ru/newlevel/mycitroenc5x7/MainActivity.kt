@@ -2,6 +2,7 @@ package ru.newlevel.mycitroenc5x7
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -20,11 +21,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
+import ru.newlevel.mycitroenc5x7.app.DeviceStateReceiver
 import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.databinding.ActivityMainBinding
 import ru.newlevel.mycitroenc5x7.models.CanInfoModel
 import ru.newlevel.mycitroenc5x7.models.Mode
-import ru.newlevel.mycitroenc5x7.models.SuspensionState
 import ru.newlevel.mycitroenc5x7.service.UsbService
 import ru.newlevel.mycitroenc5x7.ui.MainViewModel
 
@@ -44,6 +45,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)
         checkOverlayPermission()
+        val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
+        this.registerReceiver(DeviceStateReceiver(), filter)
     }
     private fun checkOverlayPermission() {
         if (!Settings.canDrawOverlays(this)) {

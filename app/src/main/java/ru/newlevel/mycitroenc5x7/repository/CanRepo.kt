@@ -2,6 +2,8 @@ package ru.newlevel.mycitroenc5x7.repository
 
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -28,6 +30,7 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
         0f, 10f, 20f, 30f, 40f, 50f, 60f, 70f, 80f, 90f, 100f, 150f, 200f, 250f, 300f, 350f,
         400f, 600f, 800f, 1000f, 1200f, 1400f, 1600f, 1800f, 2000f, 2200f, 2400f
     )
+    private var musicJob: Job? = null
 
     private val _logger = MutableSharedFlow<String>()
     val logger: SharedFlow<String> = _logger
@@ -74,26 +77,65 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
 //    }
 
     fun removeSpecialCharacters(input: String): String {
-        return input.replace("[^\\w\\s]".toRegex(), "").trim()
+       // return input.trim()
+       return input.replace("\\(.*?\\)".toRegex(), "").trim()
     }
 
     @OptIn(ExperimentalUnsignedTypes::class)
     fun setMusic(musicModel: MusicModel) {
-        coroutineScope.launch {
-            val resultText = trimToByteLimit("${removeSpecialCharacters(musicModel.artist.toString())} - ${removeSpecialCharacters(musicModel.title.toString())}")
-            val resultDecode = canUtils.encodeTextForCAN(resultText)
-            val modifiedResultDecode = resultDecode.map { packet ->
+        musicJob?.cancel()
+        musicJob = coroutineScope.launch {
+            val artist = "★ " + removeSpecialCharacters(musicModel.artist.toString()) + "\n"
+            val title = "» " + removeSpecialCharacters(musicModel.title.toString()) + "\n"
+
+            val resultArtist = trimToByteLimit(artist)
+            val resultArtistDecode = canUtils.encodeTextForCAN(resultArtist)
+            val modifiedResultArtistDecode = resultArtistDecode.map { packet ->
                 val newPacket = packet.toMutableList()
                 newPacket.add(0, newPacket.size.toByte())
                 newPacket.add(0, (0xFF).toByte())
                 while (newPacket.size < 10) {
-                    newPacket.add(0x00.toByte())  // Добавляем 0x00 в конец
+                    newPacket.add(0x00.toByte())
                 }
                 newPacket.toByteArray()
             }
-            _musicFlow.emit(modifiedResultDecode)
+            val resultTitle = trimToByteLimit(title)
+            val resultTitleDecode = canUtils.encodeTextForCAN(resultTitle)
+            val modifiedResultTitleDecodeDecode = resultTitleDecode.map { packet ->
+                val newPacket = packet.toMutableList()
+                newPacket.add(0, newPacket.size.toByte())
+                newPacket.add(0, (0xFF).toByte())
+                while (newPacket.size < 10) {
+                    newPacket.add(0x00.toByte())
+                }
+                newPacket.toByteArray()
+            }
+            val texts = listOf(modifiedResultArtistDecode, modifiedResultTitleDecodeDecode) // Список сообщений для отправки
+
+            while (true) {
+                for (text in texts) {
+                    _musicFlow.emit(text)
+                    delay(5000) // Ждем 3 секунды перед следующей отправкой
+                }
+            }
         }
     }
+//    fun setMusic(musicModel: MusicModel) {
+//        coroutineScope.launch {
+//            val resultText = trimToByteLimit("${removeSpecialCharacters(musicModel.artist.toString())} - ${removeSpecialCharacters(musicModel.title.toString())}")
+//            val resultDecode = canUtils.encodeTextForCAN(resultText)
+//            val modifiedResultDecode = resultDecode.map { packet ->
+//                val newPacket = packet.toMutableList()
+//                newPacket.add(0, newPacket.size.toByte())
+//                newPacket.add(0, (0xFF).toByte())
+//                while (newPacket.size < 10) {
+//                    newPacket.add(0x00.toByte())  // Добавляем 0x00 в конец
+//                }
+//                newPacket.toByteArray()
+//            }
+//            _musicFlow.emit(modifiedResultDecode)
+//        }
+//    }
 
     @OptIn(ExperimentalUnsignedTypes::class)
     fun setToBackground(isBackground: Boolean) {
@@ -152,10 +194,10 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
                 if (model.distance.contains("запущен")) {
                     _naviFlow.value = NaviServiceModel()
                 } else {
-                    val regex = """(\d+(?:\.\d+)?)\s*(м|км)""".toRegex()
+                    val regex = """(\d+(?:[.,]\d+)?)\s*(м|км)""".toRegex() // Теперь поддерживает запятую и точку
                     val match = regex.find(model.distance)
                     if (match != null) {
-                        var value = match.groupValues[1].toFloat() // Число с поддержкой дробных значений
+                        var value = match.groupValues[1].replace(",", ".").toFloat() // Заменяем запятую на точку перед парсингом
                         val unit = match.groupValues[2] // "м" или "км"
                         if (unit == "км") {
                             value *= 1000
@@ -194,12 +236,17 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
                         }
                     }
                     model.turn?.let {
-                        if (model.turn.contains("направо", ignoreCase = true)) {
+                        Log.e(TAG, "Поворот: ${model.turn}")
+                        if (model.turn.contains("направо", ignoreCase = true) || model.turn.contains("круг", ignoreCase = true) || model.turn.contains("съезд", ignoreCase = true)) {
                             resultTurn = 0xC0.toByte()
                         } else if (model.turn.contains("налево", ignoreCase = true)) {
                             resultTurn = 0xC1.toByte()
                         } else if (model.turn.contains("прямо", ignoreCase = true)) {
                             resultTurn = 0xC2.toByte()
+                        } else if (model.turn.contains("камера", ignoreCase = true) && model.turn.contains("перек", ignoreCase = true)) {
+                            resultTurn = 0xC4.toByte()
+                        } else if (model.turn.contains("камера", ignoreCase = true)) {
+                            resultTurn = 0xC3.toByte()
                         }
                     }
                     _naviFlow.value = _naviFlow.value.copy(distance = resultDistance, turn = resultTurn)

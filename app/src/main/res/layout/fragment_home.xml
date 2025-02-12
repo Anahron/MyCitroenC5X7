@@ -66,6 +66,37 @@
         app:layout_constraintHorizontal_bias="0.844"
         app:layout_constraintStart_toStartOf="@+id/guideline3" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_resetDay2"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="@color/main_yellow"
+        android:state_checked="true"
+        android:text="@string/reset_2"
+        android:textAllCaps="false"
+        android:textColor="@color/background"
+        android:textSize="26sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.844"
+        app:layout_constraintStart_toStartOf="@+id/guideline3" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_resetDay1"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:backgroundTint="@color/main_yellow"
+        android:state_checked="true"
+        android:text="@string/reset_1"
+        android:textAllCaps="false"
+        android:textColor="@color/background"
+        android:textSize="26sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/button_resetDay2"
+        app:layout_constraintEnd_toEndOf="@+id/button_resetDay2" />
+
     <TextView
         android:id="@+id/text_trip_computer"
         android:layout_width="wrap_content"
@@ -76,6 +107,32 @@
         android:textSize="40sp"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+
+    <TextView
+        android:id="@+id/text_odometer_fact"
+        style="@style/TextItemsStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/_000000"
+        android:textColor="@color/main_yellow"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guidelineRight2"
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+    <TextView
+        android:id="@+id/text_odometer_km"
+        style="@style/TextItemsStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="4dp"
+        android:text="@string/km"
+        android:textColor="@color/main_yellow"
+        app:layout_constraintStart_toEndOf="@+id/text_odometer_fact"
+        app:layout_constraintTop_toTopOf="@+id/text_odometer_fact" />
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/trip_group"
@@ -177,7 +234,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:layout_width="160dp"
@@ -190,6 +248,53 @@
                 android:id="@+id/text_l100_moment"
                 style="@style/TextItemsStyle"
                 android:text="@string/_0_0_100" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+            <TextView
+                style="@style/TextItemsStyle"
+                android:layout_width="wrap_content"
+                android:layout_margin="0dp"
+                android:layout_weight="1"
+                android:text="@string/day_1" />
+
+            <TextView
+                android:id="@+id/text_trip_day1"
+                style="@style/TextItemsStyle"
+                android:layout_weight="4"
+                android:text="@string/_000000" />
+            <TextView
+                style="@style/TextItemsStyle"
+               android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="@string/km" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextItemsStyle"
+                android:layout_width="wrap_content"
+                android:layout_margin="0dp"
+                android:layout_weight="1"
+                android:text="@string/day_2" />
+
+            <TextView
+                android:id="@+id/text_trip_day2"
+                style="@style/TextItemsStyle"
+                android:layout_weight="4"
+                android:text="@string/_000000" />
+            <TextView
+                style="@style/TextItemsStyle"
+                android:layout_marginStart="4dp"
+                android:text="@string/km" />
         </LinearLayout>
 
     </LinearLayout>
@@ -267,7 +372,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:layout_width="160dp"
@@ -287,7 +393,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:layout_width="160dp"

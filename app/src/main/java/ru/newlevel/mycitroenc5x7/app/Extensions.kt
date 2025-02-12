@@ -19,6 +19,7 @@ fun CanInfoModel.mapToUiTripModel(): UiTripModel{
         engineTime2 = String.format(Locale("ru", "RU"), "%.1f м/ч", (this.trip2.totalDistance / this.trip2.avgSpeedKmh.coerceIn(1, 300).toDouble())),
         litersPer100km =  if (this.momentTrip.litersPer100km > 400) "-- л/100" else String.format(Locale("ru", "RU"), "%.1f л/100", this.momentTrip.litersPer100km.coerceIn(0, 300) / 10.0),
         totalDistance = this.momentTrip.totalDistance.toString() + " км",
-        totalDistanceFinish = String.format(Locale("ru", "RU"), "%.1f км", this.momentTrip.totalDistanceFinish/10.0)
+        totalDistanceFinish = String.format(Locale("ru", "RU"), "%.1f км", this.momentTrip.totalDistanceFinish/10.0),
+        odometer = this.odometer,
     )
 }

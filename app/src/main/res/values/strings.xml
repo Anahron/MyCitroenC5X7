@@ -20,6 +20,8 @@
     <string name="guide_me_home">Проводи меня домой</string>
     <string name="cmb_brightness">Яркость приборной панели</string>
     <string name="a_you_sure_to_reset">Вы уверены, что хотите сбросить пробег?</string>
+    <string name="a_you_sure_to_reset_day1">Вы уверены, что хотите сбросить дневной пробег 1?</string>
+    <string name="a_you_sure_to_reset_day2">Вы уверены, что хотите сбросить дневной пробег 2?</string>
     <string name="cancel">Отмена</string>
     <string name="parktronics">Парктроник</string>
     <string name="driver_opening">Комфортная посадка</string>
@@ -59,4 +61,11 @@
     <string name="left">Левое</string>
     <string name="performance">Performance</string>
     <string name="normal">Normal</string>
+    <string name="_000000">000000</string>
+    <string name="odo_title">Пробег:</string>
+    <string name="km">км</string>
+    <string name="day_2">Дневной 2</string>
+    <string name="day_1">Дневной 1</string>
+    <string name="reset_1">Сбросить 1</string>
+    <string name="reset_2">Сбросить 2</string>
 </resources>

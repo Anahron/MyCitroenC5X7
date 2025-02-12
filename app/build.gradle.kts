@@ -51,6 +51,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation (libs.androidx.datastore.preferences)
     //DI
     implementation(libs.io.insert.koin.koin.core)
     implementation(libs.koin.android)
