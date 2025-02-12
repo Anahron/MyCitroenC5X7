@@ -13,11 +13,15 @@ data class DayTripData(val day1Trip: Int, val day2Trip: Int)
 class DayTripRepository(private val context: Context) {
     private val day1key = intPreferencesKey("day1_trip")
     private val day2key = intPreferencesKey("day2_trip")
+    private val odoKey = intPreferencesKey("odometer")
 
     val dayTripFlow: Flow<DayTripData> = context.dataStore.data.map { prefs ->
+        val odometer = prefs[odoKey] ?: 0
+        val day1Start = prefs[day1key] ?: odometer
+        val day2Start = prefs[day2key] ?: odometer
         DayTripData(
-            day1Trip = prefs[day1key] ?: 0,
-            day2Trip = prefs[day2key] ?: 0
+            day1Trip = odometer - day1Start,
+            day2Trip = odometer - day2Start
         )
     }
 
@@ -29,6 +33,11 @@ class DayTripRepository(private val context: Context) {
     suspend fun updateDay2(newMileage: Int) {
         context.dataStore.edit { prefs ->
             prefs[day2key] = newMileage
+        }
+    }
+    suspend fun updateOdometer(newMileage: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[odoKey] = newMileage
         }
     }
 }

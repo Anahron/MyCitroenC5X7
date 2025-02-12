@@ -28,6 +28,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         setupListeners()
         collectUiState()
         collectTripState()
+        collectDayTripState()
     }
 
     private fun setupListeners() {
@@ -77,8 +78,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         buttonYes.setOnClickListener {
             when (message) {
                 MessageType.TRIP -> sendResetTrip(homeViewModel.uiState.value)
-                MessageType.DAY1 -> homeViewModel.updateDay1()
-                MessageType.DAY2 -> homeViewModel.updateDay2()
+                MessageType.DAY1 -> {
+                    homeViewModel.updateDay1()
+                    binding.textTripDay1.text = "0"
+                }
+                MessageType.DAY2 -> {
+                    homeViewModel.updateDay2()
+                    binding.textTripDay2.text = "0"
+                }
             }
             dialog.dismiss()
         }
@@ -96,14 +103,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
     }
 
+    private fun collectDayTripState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            homeViewModel.dayTripDataFlow.collect {
+                binding.textTripDay1.text = it.day1Trip.toString()
+                binding.textTripDay2.text = it.day2Trip.toString()
+            }
+        }
+    }
+
     private fun collectTripState() {
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.state.collect {
                 binding.textDistanceTraveledMoment.text = it.totalDistance
                 binding.textL100Moment.text = it.litersPer100km
-                binding.textOdometerFact.text = it.odometer.toString()
-                binding.textTripDay1.text = (it.odometer - homeViewModel.dayTripDataFlow.value.day1Trip).toString()
-                binding.textTripDay2.text = (it.odometer - homeViewModel.dayTripDataFlow.value.day2Trip).toString()
                 if (homeViewModel.uiState.value == 2) {
                     binding.textL100.text = it.litersPer100kmTrip1
                     binding.textSpeed.text = it.avgSpeedTrip1

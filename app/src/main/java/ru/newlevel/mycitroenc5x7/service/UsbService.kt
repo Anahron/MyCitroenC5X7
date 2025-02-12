@@ -42,6 +42,7 @@ import ru.newlevel.mycitroenc5x7.app.CHANEL_GPS
 import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.models.Mode
 import ru.newlevel.mycitroenc5x7.repository.CanRepo
+import ru.newlevel.mycitroenc5x7.repository.DayTripRepository
 
 
 class UsbService : Service(), KoinComponent {
@@ -51,6 +52,7 @@ class UsbService : Service(), KoinComponent {
     private var serialPort: UsbSerialDevice? = null
     private var connection: UsbDeviceConnection? = null
     private val canRepo: CanRepo by inject()
+    private val dayTripRepository: DayTripRepository by inject()
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     val buffer = StringBuilder()
     private var suspensionBuffer: Mode = Mode.NONE
@@ -387,6 +389,8 @@ class UsbService : Service(), KoinComponent {
     private fun setupSuspensionUpdates() {
         CoroutineScope(Dispatchers.Main).launch {
             canRepo.canDataInfoFlow.collect {
+                if (it.odometer != 0)
+                    dayTripRepository.updateOdometer(it.odometer)
                 if (it.suspensionState.mode != suspensionBuffer) {
                     when (it.suspensionState.mode) {
                         Mode.NONE -> {
