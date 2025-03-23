@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.service.notification.NotificationListenerService
-import android.service.notification.NotificationListenerService.requestRebind
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -45,32 +44,10 @@ class MusicNotificationListener : NotificationListenerService(), KoinComponent {
             val extras = notification.extras
             val distance = extras.getString("android.title")
             val turn = extras.getString("android.text")
-            for (key in extras.keySet()) {
-                val value = extras.get(key)
-                Log.e(TAG, "Extra key: $key, value: $value")
-            }
             canRepo.setNavi(NaviModel(turn = turn, distance = distance))
-            if (notification.actions != null) {
-                for (action in notification.actions) {
-                    for (key in action.extras.keySet()) {
-                        val value = action.extras.get(key)
-                        Log.e(TAG, "action key: $key, value: $value")
-                    }
-                    Log.e(TAG, "Action title: ${action.title}")
-                }
-            }
-            Log.e(TAG, "notification.number: ${notification.number}")
-            Log.e(TAG, "bubbleMetadata: ${notification.bubbleMetadata.toString()}")
-
-            val iconResId = extras.getInt("android.icon", 0)
-            Log.e(TAG, "Icon Resource ID: $iconResId")
-
-            //  E  Extra key: android.title, value: 20 м
-            // android.text, value: налево
-            // Extra key: android.text, value: направо
-            //Extra key: android.title, value: Навигатор запущен - выкл закрыть подсказки
         }
     }
+
 
     override fun onNotificationRemoved(statusBarNotification: StatusBarNotification) {
         // Обработка удаления уведомления
@@ -85,10 +62,29 @@ class MusicNotificationListener : NotificationListenerService(), KoinComponent {
 class DeviceStateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.e(TAG, "DeviceStateReceiver")
-        if (intent.action == Intent.ACTION_SCREEN_ON) {
-            // Экран включен, пытаемся перезапустить сервис
-            Log.e(TAG, "intent.action == Intent.ACTION_SCREEN_ON")
-            requestRebind(ComponentName(context, MusicNotificationListener::class.java))
+        when (intent.action) {
+            Intent.ACTION_BOOT_COMPLETED -> {
+                Log.d(TAG, "Device booted. Starting app...")
+                startApp(context)
+            }
+            Intent.ACTION_SCREEN_ON -> {
+                Log.d(TAG, "Screen turned on. Starting app...")
+                startApp(context)
+            }
+        }
+
+//        if (intent.action == Intent.ACTION_SCREEN_ON) {
+//            Log.e(TAG, "intent.action == Intent.ACTION_SCREEN_ON")
+//            requestRebind(ComponentName(context, MusicNotificationListener::class.java))
+//        }
+    }
+    private fun startApp(context: Context) {
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+        if (launchIntent != null) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(launchIntent)
+        } else {
+            Log.e(TAG, "Could not find launch intent for package: ${context.packageName}")
         }
     }
 }

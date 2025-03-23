@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
         this.registerReceiver(DeviceStateReceiver(), filter)
     }
+
     private fun checkOverlayPermission() {
         if (!Settings.canDrawOverlays(this)) {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))

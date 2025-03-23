@@ -10,6 +10,7 @@ import ru.newlevel.mycitroenc5x7.models.MomentTripData
 import ru.newlevel.mycitroenc5x7.models.PersonSettingsStatus
 import ru.newlevel.mycitroenc5x7.models.SuspensionState
 import ru.newlevel.mycitroenc5x7.models.TripData
+import ru.newlevel.mycitroenc5x7.models.WheelButtonsModel
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class CanUtils {
@@ -58,7 +59,6 @@ class CanUtils {
     //byte colorSport = 0x00; 00 - желтый, 40 - красный, 80 синий
     //byte themeLeft = 0x01;
     //byte themeRight = 0x02;
-    // global theme normal 0x00 performance 0x04?
     private fun decodeCMBforESPStatus(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
         return personSettingsStatus.copy(
             espStatus = !checkBit(canData.data[0],4), // esp
@@ -156,22 +156,11 @@ class CanUtils {
 
     // data[3] brightness  0010 1110 5 бит с конца 0 - день 1 - ночь, 4 бит dark mode, первые 0-3 - яркость - 0-15 "20" > "2F"
     private fun decodeBrightness(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
-        //   val isDay = !checkBit(canData.data[3], 5)
         val isDay = canData.data[0].toInt() < 32
 
         val cmbBrightness = canData.data[0].toInt() and 0x0F
         return personSettingsStatus.copy(isDay = isDay, cmbBrightness = cmbBrightness)
     }
-
-    //  bitRead(canMsgRcv.data[2], 7)); // Adaptative lighting
-    //  bitRead(canMsgRcv.data[2], 5)); // Guide-me home lighting
-    //  bitRead(canMsgRcv.data[2], 1)); // Duration Guide-me home lighting (2b)
-    //  bitRead(canMsgRcv.data[2], 0)); // Duration Guide-me home lighting (2b)
-    //  bitRead(canMsgRcv.data[5], 6)); // AAS - парктроник  +
-    //  bitRead(canMsgRcv.data[1], 1)); // Driver Welcome
-    //  bitRead(canMsgRcv.data[1], 0)); // Automatic parking brake
-    //canMsgSnd.data[3], 7, 1); // DSG Reset ?????
-
 
     private fun decodePersonSettingsStatus(canData: CanData, personSettingsStatus: PersonSettingsStatus): PersonSettingsStatus {
         val durationBits = ((canData.data[2].toInt() shr 0) and 0b11) // Маска 0b11 захватывает только 2 бита
@@ -194,27 +183,8 @@ class CanUtils {
 
     fun encodeTextForCAN(inputText: String): List<ByteArray> {
         val utf8Bytes = inputText.toByteArray(Charsets.UTF_8)
-
-//        val utf8Bytes: ByteArray = byteArrayOf(
-//            0x5A, 0x69, 0x76, 0x65, 0x72, 0x74, 0x2C,
-//            0x4D.toByte(), 0x44.toByte(), 0x65.toByte(), 0x65.toByte(), 0x20.toByte(), 0x2D.toByte(), 0x20.toByte(),
-//            0xD0.toByte(), 0x94.toByte(), 0xD0.toByte(), 0xB2.toByte(), 0xD1.toByte(), 0x83.toByte(), 0xD1.toByte(),
-//            0x81.toByte(), 0xD0.toByte(), 0xBC.toByte(), 0xD1.toByte(), 0x8B.toByte(), 0xD1.toByte(), 0x81.toByte(),
-//            0xD0.toByte(), 0xBB.toByte(), 0xD0.toByte(), 0xB5.toByte(), 0xD0.toByte(), 0xBD.toByte(), 0xD0.toByte(),
-//            0xBD.toByte(), 0xD0.toByte(), 0xBE.toByte()
-//        )
         val totalLength = utf8Bytes.size + 6 // длина текста + 6 служебных байт
         val packets = mutableListOf<ByteArray>()
-//        // First Frame
-//        val firstPacket = ByteArray(8)
-//        firstPacket[0] = 0x10.toByte()
-//        firstPacket[1] = totalLength.toByte() // Длина сообщения
-//        firstPacket[2] = 0x28.toByte() // Служебный байт для блютуса
-//        firstPacket[3] = 0x01.toByte()
-//        firstPacket[4] = 0x00.toByte()
-//        firstPacket[5] = count // counter
-//        firstPacket[6] = 0xFF.toByte()
-//        firstPacket[7] = 0xFE.toByte()
         // First Frame
         val firstPacket = ByteArray(8)
         firstPacket[0] = 0x10.toByte()
@@ -229,7 +199,6 @@ class CanUtils {
 
     //    utf8Bytes.copyInto(firstPacket, 3, 0, minOf(utf8Bytes.size, 5)) // Первые 5 байтов данных
         packets.add(firstPacket)
-        // Формируем последующие пакеты (Consecutive Frames)
      //   var byteIndex = 5
         var byteIndex = 0
         var frameId = 0x21.toByte() // Первый номер следующего пакета
@@ -347,6 +316,14 @@ class CanUtils {
         return MomentTripData(
             totalDistanceFinish = totalDistanceFinish, totalDistance = totalDistance, litersPer100km = litersPer100km
         )
+    }
+
+    fun checkWheelId(canData: CanData): WheelButtonsModel {
+     return when (canData.data[0].toInt()){
+           0x01 -> WheelButtonsModel.MY_APP
+           0x02 -> WheelButtonsModel.YANDEX
+           else -> WheelButtonsModel.NOTHING
+       }
     }
 }
 

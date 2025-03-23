@@ -28,6 +28,7 @@ import com.felhr.usbserial.UsbSerialInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,19 +40,23 @@ import ru.newlevel.mycitroenc5x7.MainActivity
 import ru.newlevel.mycitroenc5x7.R
 import ru.newlevel.mycitroenc5x7.app.ACTION_USB_PERMISSION
 import ru.newlevel.mycitroenc5x7.app.CHANEL_GPS
+import ru.newlevel.mycitroenc5x7.app.DEVICE_ID
+import ru.newlevel.mycitroenc5x7.app.ExternalAppLauncher
 import ru.newlevel.mycitroenc5x7.app.TAG
 import ru.newlevel.mycitroenc5x7.models.Mode
+import ru.newlevel.mycitroenc5x7.models.WheelButtonsModel
 import ru.newlevel.mycitroenc5x7.repository.CanRepo
 import ru.newlevel.mycitroenc5x7.repository.DayTripRepository
 
 
 class UsbService : Service(), KoinComponent {
 
-    private lateinit var usbManager: UsbManager
+    private val usbManager: UsbManager by lazy { getSystemService(USB_SERVICE) as UsbManager }
     private var device: UsbDevice? = null
     private var serialPort: UsbSerialDevice? = null
     private var connection: UsbDeviceConnection? = null
     private val canRepo: CanRepo by inject()
+    private val externalAppLauncher = ExternalAppLauncher()
     private val dayTripRepository: DayTripRepository by inject()
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     val buffer = StringBuilder()
@@ -279,9 +284,9 @@ class UsbService : Service(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         serviceScope.launch {
-            canRepo.putLog("onCreate()")
+            checkUsbConnection()
+            delay(30000)
         }
-        usbManager = getSystemService(USB_SERVICE) as UsbManager
         val filter = IntentFilter().apply {
             addAction(ACTION_USB_PERMISSION)
             addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
@@ -300,6 +305,12 @@ class UsbService : Service(), KoinComponent {
         // getMedia()
     }
 
+    private fun checkUsbConnection() {
+        if (serialPort == null) {
+            Log.d(TAG, "Serial port is null. Attempting to setup connection...")
+            setupConnection()
+        }
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         serviceScope.launch {
@@ -361,6 +372,17 @@ class UsbService : Service(), KoinComponent {
         setupSuspensionUpdates()
         setupMusicUpdates()
         setupNaviUpdates()
+        setupWheelUpdates()
+    }
+
+    private fun setupWheelUpdates() {
+        CoroutineScope(Dispatchers.Main).launch {
+            canRepo.wheelButtons.collect { wheelButtons ->
+                if (wheelButtons != WheelButtonsModel.NOTHING) {
+                    externalAppLauncher.openApp(wheelButtons.appPackage, context = applicationContext)
+                }
+            }
+        }
     }
 
     private fun setupNaviUpdates() {
@@ -499,48 +521,77 @@ class UsbService : Service(), KoinComponent {
         return builder.setContentTitle("CAN Service").setContentText("Collecting data...").setSmallIcon(R.drawable.img).setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.img)).setContentIntent(pendingIntent).build()
     }
 
+    private fun requestUsbPermission(device: UsbDevice?) {
+        Log.d(TAG, "Requesting USB permission for device: ${device?.deviceName}")
+        val pi = PendingIntent.getBroadcast(
+            this, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE
+        )
+        usbManager.requestPermission(device, pi)
+    }
+
+    private fun handleConnectionError() {
+        serialPort?.close()
+        connection?.close()
+        serialPort = null
+        connection = null
+        serviceScope.launch {
+            delay(5000)
+            setupConnection() // Повторная попытка
+            canRepo.putLog("Error: Cannot open serial connection.")
+        }
+    }
 
     private fun setupConnection() {
         val usbDevices = usbManager.deviceList
         if (usbDevices.isNotEmpty()) {
             usbDevices.forEach { (_, usbDevice) ->
                 device = usbDevice
-                val deviceVID = device?.vendorId
-                if (deviceVID == 1027) { // Arduino Vendor ID
+                if (isTargetDevice(device)) { // Arduino Vendor ID
                     if (usbManager.hasPermission(device)) {
                         connection = usbManager.openDevice(device)
                         serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection)
+                        if (serialPort == null) {
+                            Log.e(TAG, "Failed to create USB serial device.")
+                            connection?.close()
+                            connection = null
+                            return
+                        }
                         serialPort?.let {
                             it.setBaudRate(9600) //TODO test 38400 / 115200 (было 9600)
                             it.setDataBits(UsbSerialInterface.DATA_BITS_8)
                             it.setStopBits(UsbSerialInterface.STOP_BITS_1)
                             it.setParity(UsbSerialInterface.PARITY_NONE)
                             it.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
-                            it.open()
                             if (it.open()) {
                                 it.read(mCallback)
                                 serviceScope.launch {
                                     canRepo.putLog("Serial Connection Opened!")
                                 }
+                                return@forEach
                             } else {
-                                serviceScope.launch {
-                                    canRepo.putLog("Error: Cannot open serial connection.")
-                                }
+                                handleConnectionError()
                             }
                         }
                     } else {
-                        val pi = PendingIntent.getBroadcast(
-                            this, 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE
-                        )
-                        usbManager.requestPermission(device, pi)
+                        requestUsbPermission(device)
                     }
                 }
             }
         }
     }
 
+    private fun isTargetDevice(device: UsbDevice?): Boolean {
+        val deviceVID = device?.vendorId
+        if (deviceVID == DEVICE_ID) { // Arduino Vendor ID
+            return true
+        }
+        Log.e(TAG, "Device VID does not match. Expected: $DEVICE_ID, Found: $deviceVID")
+        return false
+    }
+
     private fun stopConnection() {
         serialPort?.close()
+        serialPort = null
         serviceScope.launch {
             canRepo.putLog("Serial Connection Closed!")
         }
@@ -563,6 +614,16 @@ class UsbService : Service(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
+        serviceScope.cancel("Service is being destroyed.")
+        try {
+            serialPort?.close()
+            connection?.close()
+            Log.d(TAG, "USB connection and serial port closed.")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error closing USB connection: ${e.message}")
+        }
+        serialPort = null
+        connection = null
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver)
         unregisterReceiver(broadcastReceiver)
     }

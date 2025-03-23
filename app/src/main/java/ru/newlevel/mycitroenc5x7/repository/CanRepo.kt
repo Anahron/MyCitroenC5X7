@@ -14,6 +14,7 @@ import ru.newlevel.mycitroenc5x7.models.CanInfoModel
 import ru.newlevel.mycitroenc5x7.models.MusicModel
 import ru.newlevel.mycitroenc5x7.models.NaviModel
 import ru.newlevel.mycitroenc5x7.models.NaviServiceModel
+import ru.newlevel.mycitroenc5x7.models.WheelButtonsModel
 import kotlin.math.roundToInt
 
 
@@ -25,13 +26,15 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
     private val _canDataInfoFlow = MutableStateFlow<CanInfoModel>(CanInfoModel())
     val canDataInfoFlow: StateFlow<CanInfoModel> = _canDataInfoFlow
 
+    private val _wheelButtons = MutableStateFlow<WheelButtonsModel>(WheelButtonsModel.NOTHING)
+    val wheelButtons: StateFlow<WheelButtonsModel> = _wheelButtons
+
     private val backgroundState = MutableStateFlow<Boolean>(false)
     private val table = listOf(
         0f, 10f, 20f, 30f, 40f, 50f, 60f, 70f, 80f, 90f, 100f, 150f, 200f, 250f, 300f, 350f,
         400f, 600f, 800f, 1000f, 1200f, 1400f, 1600f, 1800f, 2000f, 2200f, 2400f
     )
     private var musicJob: Job? = null
-
     private val _logger = MutableSharedFlow<String>()
     val logger: SharedFlow<String> = _logger
 
@@ -77,8 +80,8 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
 //    }
 
     fun removeSpecialCharacters(input: String): String {
-       // return input.trim()
-       return input.replace("\\(.*?\\)".toRegex(), "").trim()
+        // return input.trim()
+        return input.replace("\\(.*?\\)".toRegex(), "").trim()
     }
 
     @OptIn(ExperimentalUnsignedTypes::class)
@@ -176,7 +179,10 @@ class CanRepo(private val canUtils: CanUtils, private val coroutineScope: Corout
                 val can = CanData(canId = canId, data = canData.toUByteArray(), dlc = len, time = System.currentTimeMillis())
                 // Эмитируем данные
                 _canDataFlow.emit(can)
-                _canDataInfoFlow.value = canUtils.checkCanId(canData = can, _canDataInfoFlow.value)
+                if (canId == 0x21F) // или другое для кнопок
+                    _wheelButtons.value = canUtils.checkWheelId(canData = can)
+                else
+                    _canDataInfoFlow.value = canUtils.checkCanId(canData = can, _canDataInfoFlow.value)
             } else {
                 Log.e(TAG, "Invalid packet format")
                 _logger.emit("Invalid packet = $packetString")

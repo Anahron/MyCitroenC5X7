@@ -44,10 +44,10 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             setLeftWindow(2)
             sendLeftWindow(2)
         }
-        binding.tvNaviLeft.setOnClickListener{
-            setLeftWindow(3)
-            sendLeftWindow(3)
-        }
+//        binding.tvNaviLeft.setOnClickListener{
+//            setLeftWindow(3)
+//            sendLeftWindow(3)
+//        }
         binding.tvTemperatureLeft.setOnClickListener{
             setLeftWindow(4)
             sendLeftWindow(4)
@@ -68,10 +68,10 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             setRightWindow(2)
             sendRightWindow(2)
         }
-        binding.tvNaviRight.setOnClickListener{
-            setRightWindow(3)
-            sendRightWindow(3)
-        }
+//        binding.tvNaviRight.setOnClickListener{
+//            setRightWindow(3)
+//            sendRightWindow(3)
+//        }
         binding.tvTemperatureRight.setOnClickListener{
             setRightWindow(4)
             sendRightWindow(4)
@@ -176,7 +176,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private fun setLeftWindow(id: Int) {
         binding.tvTahometrLeft.setTextColor(ContextCompat.getColor(requireContext(), if (id == 1) R.color.main_yellow else R.color.semi_yellow))
         binding.tvMusicLeft.setTextColor(ContextCompat.getColor(requireContext(), if (id == 2) R.color.main_yellow else R.color.semi_yellow))
-        binding.tvNaviLeft.setTextColor(ContextCompat.getColor(requireContext(), if (id == 3) R.color.main_yellow else R.color.semi_yellow))
+    //    binding.tvNaviLeft.setTextColor(ContextCompat.getColor(requireContext(), if (id == 3) R.color.main_yellow else R.color.semi_yellow))
         binding.tvTemperatureLeft.setTextColor(ContextCompat.getColor(requireContext(), if (id == 4) R.color.main_yellow else R.color.semi_yellow))
         binding.tvTripLeft.setTextColor(ContextCompat.getColor(requireContext(), if (id == 5) R.color.main_yellow else R.color.semi_yellow))
         binding.tvNothingLeft.setTextColor(ContextCompat.getColor(requireContext(), if (id == 6) R.color.main_yellow else R.color.semi_yellow))
@@ -185,7 +185,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private fun setRightWindow(id: Int) {
         binding.tvTahometrRight.setTextColor(ContextCompat.getColor(requireContext(), if (id == 1) R.color.main_yellow else R.color.semi_yellow))
         binding.tvMusicRight.setTextColor(ContextCompat.getColor(requireContext(), if (id == 2) R.color.main_yellow else R.color.semi_yellow))
-        binding.tvNaviRight.setTextColor(ContextCompat.getColor(requireContext(), if (id == 3) R.color.main_yellow else R.color.semi_yellow))
+    //    binding.tvNaviRight.setTextColor(ContextCompat.getColor(requireContext(), if (id == 3) R.color.main_yellow else R.color.semi_yellow))
         binding.tvTemperatureRight.setTextColor(ContextCompat.getColor(requireContext(), if (id == 4) R.color.main_yellow else R.color.semi_yellow))
         binding.tvTripRight.setTextColor(ContextCompat.getColor(requireContext(), if (id == 5) R.color.main_yellow else R.color.semi_yellow))
         binding.tvNothingRight.setTextColor(ContextCompat.getColor(requireContext(), if (id == 6) R.color.main_yellow else R.color.semi_yellow))
